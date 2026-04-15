@@ -34,3 +34,27 @@ export async function createClient() {
         }
     )
 }
+
+export async function getSessionUser() {
+    const supabase = await createClient()
+    const {
+        data: { user },
+        error: userError,
+    } = await supabase.auth.getUser()
+
+    if (userError || !user) return null
+
+    const { data: adminUser, error: adminError } = await supabase
+        .from('admin_users')
+        .select('role')
+        .eq('email', user.email)
+        .single()
+
+    if (adminError || !adminUser) return null
+
+    return {
+        id: user.id,
+        email: user.email,
+        role: adminUser.role as 'admin' | 'editor',
+    }
+}

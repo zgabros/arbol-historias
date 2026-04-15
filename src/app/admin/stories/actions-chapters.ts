@@ -1,9 +1,23 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient, getSessionUser } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
+async function verifyStoryOwnership(storyId: string) {
+    const user = await getSessionUser()
+    if (!user) throw new Error('No autorizado')
+
+    if (user.role === 'admin') return true
+
+    const supabase = await createClient()
+    const { data } = await supabase.from('stories').select('id').eq('id', storyId).eq('user_id', user.id).single()
+
+    if (!data) throw new Error('No autorizado o historia no encontrada')
+    return true
+}
+
 export async function getChapters(storyId: string) {
+    await verifyStoryOwnership(storyId)
     const supabase = await createClient()
     const { data, error } = await supabase
         .from('chapters')
@@ -24,10 +38,13 @@ export async function getChapter(chapterId: string) {
         .single()
 
     if (error) throw error
+    
+    await verifyStoryOwnership(data.story_id)
     return data
 }
 
 export async function createChapter(storyId: string, title: string) {
+    await verifyStoryOwnership(storyId)
     const supabase = await createClient()
     const { data, error } = await supabase
         .from('chapters')
@@ -44,9 +61,10 @@ export async function updateChapter(chapterId: string, updates: { title?: string
     const supabase = await createClient()
 
     try {
+        const chapter = await getChapter(chapterId); // getChapter already verifies ownership
+
         // If setting as starting chapter, unset others for this story
         if (updates.is_starting_chapter) {
-            const chapter = await getChapter(chapterId);
             await supabase.from('chapters')
                 .update({ is_starting_chapter: false })
                 .eq('story_id', chapter.story_id);
@@ -55,7 +73,6 @@ export async function updateChapter(chapterId: string, updates: { title?: string
         const { error } = await supabase.from('chapters').update(updates).eq('id', chapterId)
         if (error) throw error
 
-        const chapter = await getChapter(chapterId);
         revalidatePath(`/admin/stories/${chapter.story_id}`)
         revalidatePath(`/admin/stories/${chapter.story_id}/chapters/${chapterId}`)
     } catch (error) {
@@ -65,22 +82,22 @@ export async function updateChapter(chapterId: string, updates: { title?: string
 }
 
 export async function addOption(chapterId: string, label: string, targetChapterId?: string) {
+    const chapter = await getChapter(chapterId); // Verifies ownership
     const supabase = await createClient()
     const { error } = await supabase.from('options').insert([{ current_chapter_id: chapterId, label, target_chapter_id: targetChapterId }])
 
     if (error) throw error
 
-    const chapter = await getChapter(chapterId)
     revalidatePath(`/admin/stories/${chapter.story_id}/chapters/${chapterId}`)
 }
 
 export async function deleteOption(optionId: string, chapterId: string) {
+    const chapter = await getChapter(chapterId); // Verifies ownership
     const supabase = await createClient()
     const { error } = await supabase.from('options').delete().eq('id', optionId)
 
     if (error) throw error
 
-    const chapter = await getChapter(chapterId)
     revalidatePath(`/admin/stories/${chapter.story_id}/chapters/${chapterId}`)
 }
 
@@ -90,16 +107,17 @@ export async function updateOption(optionId: string, updates: {
     required_flags?: any;
     set_flags?: any;
 }, chapterId: string) {
+    const chapter = await getChapter(chapterId) // Verifies ownership
     const supabase = await createClient()
     const { error } = await supabase.from('options').update(updates).eq('id', optionId)
 
     if (error) throw error
 
-    const chapter = await getChapter(chapterId)
     revalidatePath(`/admin/stories/${chapter.story_id}/chapters/${chapterId}`)
 }
 
 export async function deleteChapter(chapterId: string, storyId: string) {
+    await verifyStoryOwnership(storyId)
     const supabase = await createClient()
     const { error } = await supabase.from('chapters').delete().eq('id', chapterId)
 
@@ -108,6 +126,7 @@ export async function deleteChapter(chapterId: string, storyId: string) {
 }
 
 export async function createChapterAndLink(storyId: string, currentChapterId: string, title: string) {
+    await verifyStoryOwnership(storyId)
     const supabase = await createClient()
 
     // 1. Create the new chapter

@@ -3,12 +3,13 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button'
 import { BookOpen } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default async function HomePage() {
   const stories = await getPublicStories()
 
   return (
-    <main className="min-h-screen bg-[#f8f5f2] text-[#2c2c2c] p-6 md:p-12">
+    <main className="min-h-screen bg-background text-foreground p-6 md:p-12">
       <div className="max-w-4xl mx-auto">
         <header className="mb-12 text-center">
           <h1 className="text-5xl font-serif font-bold mb-4">Árbol de Historias</h1>
@@ -22,14 +23,19 @@ export default async function HomePage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {stories.map((story) => (
-              <Link key={story.id} href={`/story/${story.slug}`}>
-                <Card className="h-full hover:shadow-xl transition-all hover:-translate-y-1 bg-white border-none shadow-sm overflow-hidden group">
+              <div key={story.id} className="h-full relative group">
+                <Link href={`/story/${story.slug}`} className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl">
+                  <span className="sr-only">Leer {story.title}</span>
+                </Link>
+                <Card className="h-full hover:shadow-xl transition-all hover:-translate-y-1 bg-card transform-gpu border-border shadow-sm overflow-hidden flex flex-col">
                   {story.cover_url && (
-                    <div className="h-48 overflow-hidden">
-                      <img
+                    <div className="h-48 overflow-hidden relative">
+                      <Image
                         src={story.cover_url}
                         alt={story.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
                   )}
@@ -42,13 +48,13 @@ export default async function HomePage() {
                       {story.synopsis}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <Button className="w-full bg-[#2c2c2c] hover:bg-[#444] text-white flex gap-2">
+                  <CardContent className="mt-auto">
+                    <div className="w-full inline-flex h-9 items-center justify-center rounded-md bg-primary group-hover:bg-primary/90 text-primary-foreground gap-2 transition-colors text-sm font-medium">
                       <BookOpen className="w-4 h-4" /> Comenzar a leer
-                    </Button>
+                    </div>
                   </CardContent>
                 </Card>
-              </Link>
+              </div>
             ))}
           </div>
         )}

@@ -2,8 +2,7 @@
 
 import { useGame } from '@/context/GameContext'
 import Link from 'next/link'
-import { BookOpen } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ArrowRight } from 'lucide-react'
 import { useEffect } from 'react'
 
 export default function ChapterDisplay({
@@ -17,7 +16,7 @@ export default function ChapterDisplay({
 }) {
     const { state, addItem, isLoaded } = useGame()
 
-    if (!isLoaded) return <div className="mt-20 text-center animate-pulse">Cargando partida...</div>
+    if (!isLoaded) return <div className="mt-48 text-center animate-pulse text-muted-foreground font-serif text-2xl italic">Descifrando las páginas...</div>
 
     const handleOptionClick = (option: any) => {
         if (option.set_flags?.add_item) {
@@ -32,13 +31,13 @@ export default function ChapterDisplay({
     })
 
     return (
-        <article className="prose prose-slate lg:prose-xl mx-auto">
+        <article className="max-w-[70ch] mx-auto w-full">
             {/* Contenido de la historia */}
-            <div className="font-serif text-xl md:text-2xl leading-relaxed space-y-4">
+            <div className="font-serif text-[1.25rem] md:text-[1.4rem] leading-[1.8] text-foreground tracking-[-0.01em] space-y-10 md:space-y-12">
                 {chapter.content?.split('\n\n').map((paragraph: string, index: number) => (
                     <p
                         key={index}
-                        className={`${index === 0 ? 'first-letter:text-6xl first-letter:font-bold first-letter:mr-1 first-letter:text-primary' : ''} whitespace-pre-wrap`}
+                        className={`${index === 0 ? 'first-line:uppercase first-line:tracking-widest first-letter:text-[4.5rem] md:first-letter:text-[5.5rem] first-letter:leading-[4rem] first-letter:font-bold first-letter:float-left first-letter:mr-4 first-letter:mt-2 first-letter:text-primary' : ''} whitespace-pre-wrap font-light`}
                     >
                         {paragraph}
                     </p>
@@ -46,43 +45,51 @@ export default function ChapterDisplay({
             </div>
 
             {/* Decisiones */}
-            <section className="mt-20 space-y-6">
+            <section className="mt-32 pt-16 border-t border-border/50">
                 {visibleOptions && visibleOptions.length > 0 ? (
-                    <div className="flex flex-col items-center gap-4">
+                    <div className="flex flex-col gap-8 md:gap-12">
                         {visibleOptions.map((option: any) => (
                             <Link
                                 key={option.id}
                                 href={`/story/${slug}/${option.target_chapter_id}`}
-                                className="w-full"
+                                className="group block focus:outline-none"
                                 onClick={() => handleOptionClick(option)}
                             >
-                                <Button
-                                    variant="default"
-                                    className="w-full py-3 text-md md:text-lg font-serif hover:border-[#2c2c2c] hover:bg-[#2c2c2c] hover:text-white transition-all duration-300 h-auto whitespace-normal text-left px-6"
-                                >
-                                    {option.label}
-                                    {option.set_flags?.add_item && (
-                                        <span className="ml-auto text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded uppercase tracking-tighter">
-                                            + {option.set_flags.add_item}
-                                        </span>
-                                    )}
-                                </Button>
+                                <div className="flex flex-col md:flex-row md:items-center gap-4 text-left">
+                                    <div className="flex-1 font-serif text-[1.5rem] md:text-[2rem] leading-tight text-secondary-foreground group-hover:text-primary transition-colors duration-500 max-w-[30ch]">
+                                        {option.label}
+                                    </div>
+                                    <div className="flex items-center gap-4 mt-2 md:mt-0">
+                                        {option.set_flags?.add_item && (
+                                            <span className="text-[10px] bg-primary/10 text-primary px-3 py-1.5 uppercase font-sans tracking-[0.2em] font-semibold">
+                                                + {option.set_flags.add_item}
+                                            </span>
+                                        )}
+                                        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 md:translate-x-[-10px] group-hover:translate-x-0">
+                                            <div className="w-12 h-[1px] bg-primary"></div>
+                                            <ArrowRight className="w-4 h-4 text-primary ml-1" />
+                                        </div>
+                                    </div>
+                                </div>
                             </Link>
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center space-y-8 py-12 border-t border-gray-200 mt-20">
+                    <div className="text-center space-y-12 py-16">
                         {chapter.options?.length > 0 ? (
-                            <p className="text-lg font-serif italic text-muted-foreground px-4">
-                                Tienes opciones ante ti, pero te falta algo para poder avanzar...
+                            <p className="text-2xl font-serif italic text-muted-foreground max-w-[40ch] mx-auto leading-relaxed">
+                                Tienes opciones ante ti, pero te falta algo crucial para poder avanzar...
                             </p>
                         ) : (
-                            <p className="text-2xl font-serif italic text-muted-foreground">Fin de este camino.</p>
+                            <p className="text-[clamp(3rem,6vw,5rem)] font-serif italic text-foreground opacity-30 leading-none">
+                                Fin.
+                            </p>
                         )}
-                        <Link href="/">
-                            <Button variant="ghost" className="flex gap-2 mx-auto">
-                                <BookOpen className="w-4 h-4" /> Leer otra historia
-                            </Button>
+                        <Link href="/" className="inline-flex items-center gap-4 mt-16 group focus:outline-none">
+                            <span className="font-sans text-xs uppercase tracking-[0.2em] font-semibold text-muted-foreground group-hover:text-primary transition-colors duration-500">
+                                Volver a la biblioteca
+                            </span>
+                            <div className="w-16 h-[1px] bg-muted-foreground group-hover:bg-primary group-hover:w-24 transition-all duration-500"></div>
                         </Link>
                     </div>
                 )}

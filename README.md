@@ -1,4 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Árbol de Historias
+
+Árbol de Historias es una aplicación web creada con Next.js que permite a los jugadores crear y experimentar historias de "Elige tu propia aventura" (Choose Your Own Adventure) de manera interactiva y visual.
+
+**Link de la App:** [arbolhistorias.vercel.app](https://arbolhistorias.vercel.app/)
+
+## 🚀 Características Principales
+
+- **Interfaz de Árbol:** Visualiza el flujo de la historia como un árbol, facilitando la comprensión de las ramificaciones y decisiones.
+- **Editor de Historias:** Herramienta intuitiva para crear nuevas historias y editar existentes.
+- **Modo Lectura Interactivo:** Navega por la historia haciendo clic en las decisiones, con un "contador de muertes" que rastrea los finales alternativos.
+- **Persistencia de Datos:** Las historias se guardan en `localStorage`, permitiendo guardar el progreso y los borradores.
+- **Manejo de Errores:** Validación robusta de historias (al menos una acción por nodo) y manejo de errores en tiempo real.
+
+## 🛠️ Tecnologías Utilizadas
+
+- **Framework:** [Next.js 16](https://nextjs.org/) (React Framework)
+- **Lenguaje:** [TypeScript](https://www.typescriptlang.org/)
+- **Estilos:** [Tailwind CSS](https://tailwindcss.com/)
+- **Animaciones:** [Framer Motion](https://www.framer.com/motion/)
+- **Iconos:** [Lucide React](https://lucide.dev/)
+- **Testing:** [Vitest](https://vitest.dev/)
 
 ## Getting Started
 

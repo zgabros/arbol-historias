@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Book, Settings, Plus, Star, ChevronRight, LayoutDashboard, Globe } from 'lucide-react'
+import { Book, Settings, Plus, Star, ChevronRight, LayoutDashboard, Globe, Waypoints } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface Chapter {
@@ -55,6 +55,17 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
                         )}
                     >
                         <Settings className="w-4 h-4" /> Configuración
+                    </Link>
+                    <Link
+                        href={`/admin/stories/${story.id}/map`}
+                        className={cn(
+                            "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                            pathname === `/admin/stories/${story.id}/map`
+                                ? "bg-primary text-primary-foreground shadow-sm"
+                                : "text-muted-foreground hover:bg-slate-100"
+                        )}
+                    >
+                        <Waypoints className="w-4 h-4" /> Mapa de Nodos
                     </Link>
                 </div>
 

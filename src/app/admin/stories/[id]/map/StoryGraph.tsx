@@ -11,7 +11,9 @@ import {
   Panel,
   MarkerType,
   Handle,
-  Position
+  Position,
+  type Node,
+  type Edge
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import dagre from 'dagre'
@@ -124,8 +126,8 @@ export default function StoryGraph({ storyId, chapters, options }: StoryGraphPro
         }))
     }, [options])
 
-    const [nodes, setNodes, onNodesChange] = useNodesState([])
-    const [edges, setEdges, onEdgesChange] = useEdgesState([])
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
+    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
 
     useEffect(() => {
         const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(

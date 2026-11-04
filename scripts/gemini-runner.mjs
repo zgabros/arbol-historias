@@ -58,7 +58,8 @@ Formato:
 async function run() {
   console.log("Enviando requerimiento a Gemini (gemini-2.5-pro)...");
   
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${GEMINI_API_KEY}`, {
+  // Usar gemini-2.5-flash (o gemini-flash-latest)
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

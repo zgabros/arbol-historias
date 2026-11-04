@@ -56,7 +56,7 @@ Formato requerido:
 `;
 
 async function run() {
-  console.log("Enviando requerimiento a Gemini con modelo gemini-2.5-flash...");
+  console.log("Enviando requerimiento a Geminis");
   
   const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`, {
     method: 'POST',

@@ -58,4 +58,48 @@ Formato requerido:
 async function run() {
   console.log("Enviando requerimiento a Gemini con modelo gemini-2.5-flash...");
   
-  const res = await fetch(`
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        responseMimeType: "application/json"
+      }
+    })
+  });
+
+  const data = await res.json();
+  if (data.error) {
+    console.error("Error en Gemini API:", data.error);
+    process.exit(1);
+  }
+
+  let rawJson = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!rawJson) {
+    console.error("No se recibió contenido de Gemini.");
+    process.exit(1);
+  }
+
+  // Sanitizar delimitadores markdown por si el modelo los añade
+  rawJson = rawJson.trim().replace(/^```json\s*/i, '').replace(/\s*```$/, '');
+
+  const changes = JSON.parse(rawJson);
+
+  console.log(`Aplicando cambios en ${changes.length} archivo(s)...`);
+  for (const item of changes) {
+    const dir = path.dirname(item.path);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(item.path, item.content, 'utf-8');
+    console.log(`- Escrito: ${item.path}`);
+  }
+  
+  console.log("Archivos actualizados correctamente.");
+}
+
+run().catch(err => {
+  console.error("Fallo general:", err);
+  process.exit(1);
+});

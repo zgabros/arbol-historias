@@ -1,0 +1,46 @@
+name: Gemini Agent
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  agent-run:
+    if: github.event.label.name == 'gemini-agent'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependencias del proyecto (si existen)
+        run: |
+          if [ -f package.json ]; then npm install; fi
+
+      - name: Ejecutar Agente Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: node scripts/gemini-runner.mjs
+
+      - name: Crear Pull Request con los cambios
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "feat: solución generada por Gemini para issue #${{ github.event.issue.number }}"
+          branch: "gemini/issue-${{ github.event.issue.number }}"
+          title: "🤖 Gemini: ${{ github.event.issue.title }}"
+          body: |
+            Resuelve #${{ github.event.issue.number }}.
+            
+            Cambios generados automáticamente por Gemini mediante GitHub Actions.

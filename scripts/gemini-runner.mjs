@@ -10,7 +10,7 @@ if (!GEMINI_API_KEY) {
   process.exit(1);
 }
 
-// 1. Recorrer archivos relevantes del repositorio (ignorando dependencias y builds)
+// Recorrer archivos de código ignorando dependencias y metadata
 function getCodeFiles(dir, fileList = []) {
   const files = fs.readdirSync(dir);
   for (const file of files) {
@@ -44,9 +44,9 @@ ${codebase}
 
 INSTRUCCIONES:
 Devuelve EXCLUSIVAMENTE un array JSON con los archivos que necesitas crear o actualizar.
-No incluyas explicaciones en prosa ni bloques con formato markdown (\`\`\`json). Solo el JSON plano.
+No incluyas explicaciones en prosa ni texto fuera del array.
 
-Formato:
+Formato requerido:
 [
   {
     "path": "ruta/al/archivo.ext",
@@ -56,51 +56,6 @@ Formato:
 `;
 
 async function run() {
-  console.log("Enviando requerimiento a Gemini (gemini-2.5-pro)...");
+  console.log("Enviando requerimiento a Gemini con modelo gemini-2.5-flash...");
   
-  // Usar gemini-2.5-flash (o gemini-flash-latest)
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        responseMimeType: "application/json"
-      }
-    })
-  });
-
-  const data = await res.json();
-  if (data.error) {
-    console.error("Error en Gemini API:", data.error);
-    process.exit(1);
-  }
-
-  let rawJson = data.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!rawJson) {
-    console.error("No se recibió respuesta con contenido de Gemini.");
-    process.exit(1);
-  }
-
-  // Limpiar posibles delimitadores markdown por si el modelo los añade
-  rawJson = rawJson.trim().replace(/^```json\s*/i, '').replace(/\s*```$/, '');
-
-  const changes = JSON.parse(rawJson);
-
-  console.log(`Aplicando cambios en ${changes.length} archivo(s)...`);
-  for (const item of changes) {
-    const dir = path.dirname(item.path);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(item.path, item.content, 'utf-8');
-    console.log(`- Escrito: ${item.path}`);
-  }
-  
-  console.log("Archivos actualizados correctamente.");
-}
-
-run().catch(err => {
-  console.error("Fallo general:", err);
-  process.exit(1);
-});
+  const res = await fetch(`

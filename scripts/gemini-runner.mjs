@@ -10,108 +10,147 @@ if (!GEMINI_API_KEY) {
   process.exit(1);
 }
 
+// 1. Filtrar estrictamente archivos pesados o innecesarios (como package-lock.json)
+const IGNORED_DIRS = new Set(['node_modules', '.git', 'dist', 'build', '.github', '.next', 'coverage']);
+const IGNORED_FILES = new Set(['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml']);
+
 function getCodeFiles(dir, fileList = []) {
   const files = fs.readdirSync(dir);
   for (const file of files) {
+    if (IGNORED_DIRS.has(file) || IGNORED_FILES.has(file)) continue;
     const fullPath = path.join(dir, file);
-    if (['node_modules', '.git', 'dist', 'build', '.github'].includes(file)) continue;
-    
-    if (fs.statSync(fullPath).isDirectory()) {
+    const stat = fs.statSync(fullPath);
+
+    if (stat.isDirectory()) {
       getCodeFiles(fullPath, fileList);
-    } else if (/\.(js|ts|jsx|tsx|json|html|css|md)$/i.test(file)) {
-      fileList.push(fullPath);
+    } else if (/\.(js|ts|jsx|tsx|html|css|json)$/i.test(file)) {
+      // Ignorar archivos de más de 50KB para no saturar los tokens del Free Tier
+      if (stat.size < 50 * 1024) {
+        fileList.push(fullPath);
+      }
     }
   }
   return fileList;
 }
 
 const files = getCodeFiles('.');
+console.log(`Archivos incluidos en el contexto (${files.length}):`, files);
+
 const codebase = files.map(file => {
   return `--- ARCHIVO: ${file} ---\n${fs.readFileSync(file, 'utf-8')}\n`;
 }).join('\n');
 
 const prompt = `
-Eres un desarrollador senior trabajando en este proyecto.
-Debes resolver el siguiente requerimiento técnico:
+Eres un desarrollador senior trabajando en este repositorio.
+Resuelve el siguiente requerimiento:
 
 TÍTULO: ${ISSUE_TITLE}
-DESCRIPCIÓN:
-${ISSUE_BODY}
+DESCRIPCIÓN: ${ISSUE_BODY}
 
-A continuación tienes el código del proyecto:
+CÓDIGO ACTUAL DEL PROYECTO:
 ${codebase}
 
-INSTRUCCIONES:
-Devuelve EXCLUSIVAMENTE un array JSON con los archivos que crees o actualices.
-No agregues texto explicativo ni bloques markdown. Solo el JSON plano.
-
-Formato requerido:
+INSTRUCCIONES DE SALIDA:
+Responde ÚNICAMENTE con un bloque JSON válido que contenga un array de objetos con los archivos creados o modificados.
+Formato exacto:
 [
   {
     "path": "ruta/al/archivo.ext",
-    "content": "contenido completo del archivo listo para guardar"
+    "content": "contenido completo del archivo"
   }
 ]
 `;
 
-// Lista de modelos ordenados por prioridad en caso de saturación (503)
+// Modelos Flash y Flash-Lite (los Lite tienen menor congestión en Free Tier)
 const MODELS = [
   'gemini-3.8-flash',
-  'gemini-3.7-flash',
-  'gemini-3.5-flash'
+  'gemini-3.5-flash',
+  'gemini-3.5-flash-lite',
+  'gemini-3.1-flash-lite'
 ];
 
-async function callGemini(modelName) {
-  console.log(`Intentando generación con modelo: ${modelName}...`);
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function fetchWithRetry(modelName, maxRetries = 3) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
-  
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        responseMimeType: "application/json"
-      }
-    })
-  });
 
-  const data = await res.json();
-  return { status: res.status, data };
-}
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    console.log(`[${modelName}] Intento ${attempt}/${maxRetries}...`);
 
-async function run() {
-  let responseData = null;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // Sin responseMimeType para evitar la cola de Constrained Decoding que da más 503
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.2
+        }
+      })
+    });
 
-  for (const model of MODELS) {
-    const { status, data } = await callGemini(model);
-    
-    if (status === 200 && data.candidates?.[0]?.content?.parts?.[0]?.text) {
-      responseData = data;
-      console.log(`Respuesta obtenida con éxito usando ${model}.`);
-      break;
+    const data = await res.json();
+
+    if (res.status === 200 && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return data.candidates[0].content.parts[0].text;
     }
 
-    if (status === 503 || data.error?.code === 503) {
-      console.warn(`Aviso: ${model} saturado temporalmente (503). Probando el siguiente modelo...`);
-      await new Promise(r => setTimeout(r, 2000)); // Esperar 2 segundos
+    const code = res.status || data.error?.code;
+    const msg = data.error?.message || '';
+
+    // Si el modelo tiene limit: 0 en Free Tier, saltar de inmediato al siguiente modelo sin reintentar
+    if (code === 429 && msg.includes('limit: 0')) {
+      console.warn(`[${modelName}] Sin cuota en Free Tier (limit: 0). Saltando al siguiente modelo...`);
+      return null;
+    }
+
+    // Si es 503 (alta demanda) o 429 (rate limit por minuto), aplicar Exponential Backoff + Jitter
+    if (code === 503 || code === 429) {
+      const baseDelay = Math.pow(2, attempt) * 4000; // 8s, 16s, 32s
+      const jitter = Math.floor(Math.random() * 2000);
+      const waitTime = baseDelay + jitter;
+      console.warn(`[${modelName}] Error ${code} (Saturación/Rate Limit). Esperando ${Math.round(waitTime / 1000)}s antes de reintentar...`);
+      await sleep(waitTime);
       continue;
     }
 
-    // Si es otro error (autenticación, formato, etc.), no tiene sentido rotar
-    console.error("Error devuelto por Gemini API:", data.error || data);
+    // Si es 404 (modelo deprecado/no encontrado), pasar al siguiente modelo
+    if (code === 404) {
+      console.warn(`[${modelName}] No disponible (404). Saltando al siguiente modelo...`);
+      return null;
+    }
+
+    console.error(`[${modelName}] Error no recuperable:`, data.error || data);
+    return null;
+  }
+
+  return null;
+}
+
+async function run() {
+  let rawText = null;
+
+  for (const model of MODELS) {
+    rawText = await fetchWithRetry(model, 3);
+    if (rawText) {
+      console.log(`Respuesta generada con éxito por ${model}.`);
+      break;
+    }
+  }
+
+  if (!rawText) {
+    console.error("No se pudo obtener respuesta tras agotar reintentos y modelos.");
     process.exit(1);
   }
 
-  if (!responseData) {
-    console.error("No se pudo completar la solicitud con ninguno de los modelos disponibles.");
+  // Extraer el array JSON de la respuesta aunque venga envuelto en texto o bloques ```json
+  const jsonMatch = rawText.match(/\[\s*\{[\s\S]*\}\s*\]/);
+  if (!jsonMatch) {
+    console.error("La respuesta no contenía un array JSON válido. Respuesta recibida:\n", rawText);
     process.exit(1);
   }
 
-  let rawJson = responseData.candidates[0].content.parts[0].text;
-  rawJson = rawJson.trim().replace(/^```json\s*/i, '').replace(/\s*```$/, '');
-
-  const changes = JSON.parse(rawJson);
+  const changes = JSON.parse(jsonMatch[0]);
   console.log(`Aplicando cambios en ${changes.length} archivo(s)...`);
 
   for (const item of changes) {
@@ -123,10 +162,10 @@ async function run() {
     console.log(`- Escrito: ${item.path}`);
   }
 
-  console.log("Archivos modificados y listos para commit.");
+  console.log("Proceso completado con éxito.");
 }
 
 run().catch(err => {
-  console.error("Fallo general en ejecución:", err);
+  console.error("Fallo general:", err);
   process.exit(1);
 });

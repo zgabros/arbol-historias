@@ -10,7 +10,6 @@ if (!GEMINI_API_KEY) {
   process.exit(1);
 }
 
-// 1. Filtrar carpetas y archivos pesados que inflan los tokens (como package-lock.json)
 const IGNORED_DIRS = new Set(['node_modules', '.git', 'dist', 'build', '.github', '.next', 'coverage', 'public']);
 const IGNORED_FILES = new Set(['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml']);
 
@@ -24,11 +23,8 @@ function getCodeFiles(dir, fileList = []) {
     if (stat.isDirectory()) {
       getCodeFiles(fullPath, fileList);
     } else if (/\.(js|ts|jsx|tsx|html|css)$/i.test(file) || file === 'package.json') {
-      // Solo incluir archivos menores a 30KB para cuidar el límite de 250k tokens/minuto
       if (stat.size < 30 * 1024) {
         fileList.push(fullPath);
-      } else {
-        console.log(`Omitiendo archivo pesado (${Math.round(stat.size / 1024)}KB): ${fullPath}`);
       }
     }
   }
@@ -55,17 +51,16 @@ CÓDIGO ACTUAL DEL PROYECTO:
 ${codebase}
 
 INSTRUCCIONES DE SALIDA:
-Responde ÚNICAMENTE con un array JSON válido que contenga los archivos creados o modificados. No agregues explicaciones fuera del JSON.
-Formato exacto:
-[
-  {
-    "path": "ruta/al/archivo.ext",
-    "content": "contenido completo del archivo"
-  }
-]
+Devuelve ÚNICAMENTE los archivos que necesites crear o modificar.
+Para cada archivo modificado o nuevo, envuélvelo exactamente con este formato XML (sin escapar comillas ni saltos de línea):
+
+<file path="ruta/exacta/al/archivo.tsx">
+// contenido completo del archivo aquí
+</file>
+
+No omitas partes del código con comentarios tipo "// ... resto del código". Escribe el archivo completo.
 `;
 
-// Empezamos por modelos Lite y 3.5 que no sufren los picos 503 del 3.8
 const MODELS = [
   'gemini-3.5-flash-lite',
   'gemini-3.1-flash-lite',
@@ -88,7 +83,8 @@ async function run() {
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
-          temperature: 0.2
+          temperature: 0.2,
+          maxOutputTokens: 65536
         }
       })
     });
@@ -97,7 +93,8 @@ async function run() {
 
     if (res.status === 200 && data.candidates?.[0]?.content?.parts?.[0]?.text) {
       rawText = data.candidates[0].content.parts[0].text;
-      console.log(`¡Respuesta generada con éxito por ${model}!`);
+      const finishReason = data.candidates[0].finishReason;
+      console.log(`¡Respuesta generada con éxito por ${model}! (finishReason: ${finishReason})`);
       break;
     }
 
@@ -105,7 +102,7 @@ async function run() {
     console.warn(`[${model}] Falló con código ${code}: ${data.error?.message || 'Error desconocido'}`);
 
     if (code === 503 || code === 429) {
-      console.log("Esperando 20 segundos para liberar la ventana de cuota/demanda antes de probar el siguiente...");
+      console.log("Esperando 20 segundos antes de probar el siguiente modelo...");
       await sleep(20000);
     }
   }
@@ -115,14 +112,26 @@ async function run() {
     process.exit(1);
   }
 
-  // Extraer el array JSON de la respuesta
-  const jsonMatch = rawText.match(/\[\s*\{[\s\S]*\}\s*\]/);
-  if (!jsonMatch) {
-    console.error("La respuesta no contenía un JSON válido:\n", rawText);
+  // Extraer todos los bloques <file path="...">...</file>
+  const fileRegex = /<file\s+path="([^"]+)">\s*([\s\S]*?)\s*<\/file>/g;
+  const changes = [];
+  let match;
+
+  while ((match = fileRegex.exec(rawText)) !== null) {
+    let content = match[2];
+    // Limpiar por si el modelo puso ```tsx adentro del tag <file>
+    content = content.replace(/^```[a-zA-Z]*\n/, '').replace(/\n```$/, '');
+    changes.push({
+      path: match[1].trim(),
+      content: content
+    });
+  }
+
+  if (changes.length === 0) {
+    console.error("No se encontraron bloques <file path=\"...\"> en la respuesta:\n", rawText);
     process.exit(1);
   }
 
-  const changes = JSON.parse(jsonMatch[0]);
   console.log(`Aplicando cambios en ${changes.length} archivo(s)...`);
 
   for (const item of changes) {

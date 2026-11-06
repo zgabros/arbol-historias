@@ -4,12 +4,10 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import StoryStatusToggle from '../StoryStatusToggle'
 import DeleteButton from '@/components/DeleteButton'
-import { deleteChapter } from '@/app/admin/stories/actions-chapters'
 
 export default async function StoryDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -23,8 +21,8 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
     return (
         <div className="p-4 sm:p-8 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
             <div>
-                <h1 className="text-2xl sm:text-3xl font-bold mb-2">Información General</h1>
-                <p className="text-muted-foreground text-sm">Configura los detalles principales de tu historia.</p>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-foreground">Información General</h1>
+                <p className="text-muted-foreground text-sm font-medium">Configura los detalles principales de tu historia.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -36,42 +34,44 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Título de la Historia</Label>
-                                <Input value={story.title} readOnly className="bg-slate-50 cursor-not-allowed text-sm" />
-                                <p className="text-[10px] text-muted-foreground italic">El título se define al crear la historia.</p>
+                                <Label htmlFor="story-title-display">Título de la Historia</Label>
+                                <Input id="story-title-display" value={story.title} readOnly className="bg-muted/50 cursor-not-allowed text-sm font-medium" />
+                                <p className="text-xs text-muted-foreground italic">El título se define al crear la historia.</p>
                             </div>
                             <div className="space-y-2">
-                                <Label>Autor</Label>
-                                <Input value={story.author_name || ''} readOnly className="bg-slate-50 cursor-not-allowed text-sm" placeholder="Autor anónimo" />
+                                <Label htmlFor="story-author-display">Autor</Label>
+                                <Input id="story-author-display" value={story.author_name || ''} readOnly className="bg-muted/50 cursor-not-allowed text-sm font-medium" placeholder="Autor anónimo" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Sinopsis</Label>
+                                <Label htmlFor="story-synopsis-display">Sinopsis</Label>
                                 <Textarea
+                                    id="story-synopsis-display"
                                     value={story.synopsis || ''}
                                     readOnly
-                                    className="bg-slate-50 cursor-not-allowed min-h-[120px] text-sm"
+                                    className="bg-muted/50 cursor-not-allowed min-h-[120px] text-sm font-medium"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>URL de Portada (Imagen)</Label>
+                                <Label htmlFor="story-cover-display">URL de Portada (Imagen)</Label>
                                 <Input
+                                    id="story-cover-display"
                                     value={story.cover_url || ''}
                                     readOnly
-                                    className="bg-slate-50 cursor-not-allowed text-sm"
+                                    className="bg-muted/50 cursor-not-allowed text-sm font-medium"
                                     placeholder="https://ejemplo.com/imagen.jpg"
                                 />
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-red-100">
+                    <Card className="border-red-200 dark:border-red-900">
                         <CardHeader>
-                            <CardTitle className="text-red-600 text-lg flex items-center gap-2">
+                            <CardTitle className="text-red-600 dark:text-red-400 text-lg flex items-center gap-2">
                                 Zona de Peligro
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-sm text-muted-foreground mb-4">
+                            <p className="text-sm text-muted-foreground mb-4 font-medium">
                                 El borrar una historia eliminará permanentemente todos sus capítulos y decisiones. Esta acción no se puede deshacer.
                             </p>
                             <DeleteButton
@@ -82,7 +82,7 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
                                 title="¿Eliminar historia completa?"
                                 description={`¿Estás seguro de que quieres borrar "${story.title}" y todos sus capítulos asociados?`}
                                 label="Eliminar Historia Definitivamente"
-                                className="w-full justify-center py-6 border-red-200 text-xs sm:text-sm"
+                                className="w-full justify-center py-6 border-red-200 text-xs sm:text-sm font-semibold"
                             />
                         </CardContent>
                     </Card>
@@ -96,7 +96,7 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
                         <CardContent className="space-y-6">
                             <div className="flex flex-col gap-4">
                                 <StoryStatusToggle storyId={story.id} initialStatus={story.is_published} />
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-muted-foreground font-medium">
                                     {story.is_published
                                         ? "Tu historia es visible en el catálogo público."
                                         : "Tu historia está en modo privado. Solo tú puedes verla en el editor."}
@@ -104,15 +104,15 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
                             </div>
 
                             <div className="pt-4 border-t">
-                                <h4 className="text-xs font-bold uppercase mb-3">Resumen</h4>
+                                <h3 className="text-xs font-bold uppercase mb-3 text-foreground tracking-wider">Resumen</h3>
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">Capítulos:</span>
-                                        <span className="font-medium">{chapters.length}</span>
+                                        <span className="text-muted-foreground font-medium">Capítulos:</span>
+                                        <span className="font-bold text-foreground">{chapters.length}</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">Capítulo Inicial:</span>
-                                        <span className="font-medium">
+                                        <span className="text-muted-foreground font-medium">Capítulo Inicial:</span>
+                                        <span className="font-bold text-foreground">
                                             {chapters.some(c => c.is_starting_chapter) ? "Definido" : "No definido"}
                                         </span>
                                     </div>
@@ -122,8 +122,8 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
                     </Card>
 
                     {story.cover_url && (
-                        <div className="rounded-lg overflow-hidden border shadow-sm">
-                            <img src={story.cover_url} alt="Portada" className="w-full h-auto object-cover" />
+                        <div className="rounded-lg overflow-hidden border shadow-sm bg-muted">
+                            <img src={story.cover_url} alt={`Portada de la historia ${story.title}`} className="w-full h-auto object-cover" />
                         </div>
                     )}
                 </div>

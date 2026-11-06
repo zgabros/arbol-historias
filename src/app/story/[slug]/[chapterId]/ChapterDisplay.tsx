@@ -3,7 +3,6 @@
 import { useGame } from '@/context/GameContext'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { useEffect } from 'react'
 
 export default function ChapterDisplay({
     story,
@@ -45,14 +44,14 @@ export default function ChapterDisplay({
             </div>
 
             {/* Decisiones */}
-            <section className="mt-32 pt-16 border-t border-border/50">
+            <section className="mt-32 pt-16 border-t border-border/50" aria-label="Opciones y decisiones">
                 {visibleOptions && visibleOptions.length > 0 ? (
                     <div className="flex flex-col gap-8 md:gap-12">
                         {visibleOptions.map((option: any) => (
                             <Link
                                 key={option.id}
                                 href={`/story/${slug}/${option.target_chapter_id}`}
-                                className="group block focus:outline-none"
+                                className="group block focus:outline-none focus-visible:ring-4 focus-visible:ring-ring rounded-lg p-2 transition-all"
                                 onClick={() => handleOptionClick(option)}
                             >
                                 <div className="flex flex-col md:flex-row md:items-center gap-4 text-left">
@@ -61,11 +60,11 @@ export default function ChapterDisplay({
                                     </div>
                                     <div className="flex items-center gap-4 mt-2 md:mt-0">
                                         {option.set_flags?.add_item && (
-                                            <span className="text-[10px] bg-primary/10 text-primary px-3 py-1.5 uppercase font-sans tracking-[0.2em] font-semibold">
+                                            <span className="text-xs bg-primary/10 text-primary px-3 py-1.5 uppercase font-sans tracking-[0.2em] font-bold">
                                                 + {option.set_flags.add_item}
                                             </span>
                                         )}
-                                        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 md:translate-x-[-10px] group-hover:translate-x-0">
+                                        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 md:translate-x-[-10px] group-hover:translate-x-0" aria-hidden="true">
                                             <div className="w-12 h-[1px] bg-primary"></div>
                                             <ArrowRight className="w-4 h-4 text-primary ml-1" />
                                         </div>
@@ -81,15 +80,15 @@ export default function ChapterDisplay({
                                 Tienes opciones ante ti, pero te falta algo crucial para poder avanzar...
                             </p>
                         ) : (
-                            <p className="text-[clamp(3rem,6vw,5rem)] font-serif italic text-foreground opacity-30 leading-none">
+                            <p className="text-[clamp(3rem,6vw,5rem)] font-serif italic text-foreground opacity-40 leading-none">
                                 Fin.
                             </p>
                         )}
-                        <Link href="/" className="inline-flex items-center gap-4 mt-16 group focus:outline-none">
-                            <span className="font-sans text-xs uppercase tracking-[0.2em] font-semibold text-muted-foreground group-hover:text-primary transition-colors duration-500">
+                        <Link href="/" className="inline-flex items-center gap-4 mt-16 group focus:outline-none focus-visible:ring-4 focus-visible:ring-ring rounded-md p-2">
+                            <span className="font-sans text-xs uppercase tracking-[0.2em] font-bold text-muted-foreground group-hover:text-primary transition-colors duration-500">
                                 Volver a la biblioteca
                             </span>
-                            <div className="w-16 h-[1px] bg-muted-foreground group-hover:bg-primary group-hover:w-24 transition-all duration-500"></div>
+                            <div className="w-16 h-[1px] bg-muted-foreground group-hover:bg-primary group-hover:w-24 transition-all duration-500" aria-hidden="true"></div>
                         </Link>
                     </div>
                 )}

@@ -10,8 +10,8 @@ if (!GEMINI_API_KEY) {
   process.exit(1);
 }
 
-// 1. Filtrar estrictamente archivos pesados o innecesarios (como package-lock.json)
-const IGNORED_DIRS = new Set(['node_modules', '.git', 'dist', 'build', '.github', '.next', 'coverage']);
+// 1. Filtrar carpetas y archivos pesados que inflan los tokens (como package-lock.json)
+const IGNORED_DIRS = new Set(['node_modules', '.git', 'dist', 'build', '.github', '.next', 'coverage', 'public']);
 const IGNORED_FILES = new Set(['package-lock.json', 'yarn.lock', 'pnpm-lock.yaml']);
 
 function getCodeFiles(dir, fileList = []) {
@@ -23,10 +23,12 @@ function getCodeFiles(dir, fileList = []) {
 
     if (stat.isDirectory()) {
       getCodeFiles(fullPath, fileList);
-    } else if (/\.(js|ts|jsx|tsx|html|css|json)$/i.test(file)) {
-      // Ignorar archivos de más de 50KB para no saturar los tokens del Free Tier
-      if (stat.size < 50 * 1024) {
+    } else if (/\.(js|ts|jsx|tsx|html|css)$/i.test(file) || file === 'package.json') {
+      // Solo incluir archivos menores a 30KB para cuidar el límite de 250k tokens/minuto
+      if (stat.size < 30 * 1024) {
         fileList.push(fullPath);
+      } else {
+        console.log(`Omitiendo archivo pesado (${Math.round(stat.size / 1024)}KB): ${fullPath}`);
       }
     }
   }
@@ -40,6 +42,8 @@ const codebase = files.map(file => {
   return `--- ARCHIVO: ${file} ---\n${fs.readFileSync(file, 'utf-8')}\n`;
 }).join('\n');
 
+console.log(`Tamaño total del contexto enviado: ~${Math.round(codebase.length / 4)} tokens estimados.`);
+
 const prompt = `
 Eres un desarrollador senior trabajando en este repositorio.
 Resuelve el siguiente requerimiento:
@@ -51,7 +55,7 @@ CÓDIGO ACTUAL DEL PROYECTO:
 ${codebase}
 
 INSTRUCCIONES DE SALIDA:
-Responde ÚNICAMENTE con un bloque JSON válido que contenga un array de objetos con los archivos creados o modificados.
+Responde ÚNICAMENTE con un array JSON válido que contenga los archivos creados o modificados. No agregues explicaciones fuera del JSON.
 Formato exacto:
 [
   {
@@ -61,26 +65,26 @@ Formato exacto:
 ]
 `;
 
-// Modelos Flash y Flash-Lite (los Lite tienen menor congestión en Free Tier)
+// Empezamos por modelos Lite y 3.5 que no sufren los picos 503 del 3.8
 const MODELS = [
-  'gemini-3.8-flash',
-  'gemini-3.5-flash',
   'gemini-3.5-flash-lite',
-  'gemini-3.1-flash-lite'
+  'gemini-3.1-flash-lite',
+  'gemini-3.5-flash',
+  'gemini-3.8-flash'
 ];
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function fetchWithRetry(modelName, maxRetries = 3) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
+async function run() {
+  let rawText = null;
 
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    console.log(`[${modelName}] Intento ${attempt}/${maxRetries}...`);
+  for (const model of MODELS) {
+    console.log(`[${model}] Enviando solicitud...`);
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
 
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      // Sin responseMimeType para evitar la cola de Constrained Decoding que da más 503
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
@@ -92,61 +96,29 @@ async function fetchWithRetry(modelName, maxRetries = 3) {
     const data = await res.json();
 
     if (res.status === 200 && data.candidates?.[0]?.content?.parts?.[0]?.text) {
-      return data.candidates[0].content.parts[0].text;
+      rawText = data.candidates[0].content.parts[0].text;
+      console.log(`¡Respuesta generada con éxito por ${model}!`);
+      break;
     }
 
     const code = res.status || data.error?.code;
-    const msg = data.error?.message || '';
+    console.warn(`[${model}] Falló con código ${code}: ${data.error?.message || 'Error desconocido'}`);
 
-    // Si el modelo tiene limit: 0 en Free Tier, saltar de inmediato al siguiente modelo sin reintentar
-    if (code === 429 && msg.includes('limit: 0')) {
-      console.warn(`[${modelName}] Sin cuota en Free Tier (limit: 0). Saltando al siguiente modelo...`);
-      return null;
-    }
-
-    // Si es 503 (alta demanda) o 429 (rate limit por minuto), aplicar Exponential Backoff + Jitter
     if (code === 503 || code === 429) {
-      const baseDelay = Math.pow(2, attempt) * 4000; // 8s, 16s, 32s
-      const jitter = Math.floor(Math.random() * 2000);
-      const waitTime = baseDelay + jitter;
-      console.warn(`[${modelName}] Error ${code} (Saturación/Rate Limit). Esperando ${Math.round(waitTime / 1000)}s antes de reintentar...`);
-      await sleep(waitTime);
-      continue;
-    }
-
-    // Si es 404 (modelo deprecado/no encontrado), pasar al siguiente modelo
-    if (code === 404) {
-      console.warn(`[${modelName}] No disponible (404). Saltando al siguiente modelo...`);
-      return null;
-    }
-
-    console.error(`[${modelName}] Error no recuperable:`, data.error || data);
-    return null;
-  }
-
-  return null;
-}
-
-async function run() {
-  let rawText = null;
-
-  for (const model of MODELS) {
-    rawText = await fetchWithRetry(model, 3);
-    if (rawText) {
-      console.log(`Respuesta generada con éxito por ${model}.`);
-      break;
+      console.log("Esperando 20 segundos para liberar la ventana de cuota/demanda antes de probar el siguiente...");
+      await sleep(20000);
     }
   }
 
   if (!rawText) {
-    console.error("No se pudo obtener respuesta tras agotar reintentos y modelos.");
+    console.error("No se pudo obtener respuesta de ningún modelo.");
     process.exit(1);
   }
 
-  // Extraer el array JSON de la respuesta aunque venga envuelto en texto o bloques ```json
+  // Extraer el array JSON de la respuesta
   const jsonMatch = rawText.match(/\[\s*\{[\s\S]*\}\s*\]/);
   if (!jsonMatch) {
-    console.error("La respuesta no contenía un array JSON válido. Respuesta recibida:\n", rawText);
+    console.error("La respuesta no contenía un JSON válido:\n", rawText);
     process.exit(1);
   }
 

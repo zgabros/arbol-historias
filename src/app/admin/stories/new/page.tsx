@@ -42,10 +42,10 @@ export default function NewStoryPage() {
     }
 
     return (
-        <div className="p-8 max-w-2xl mx-auto">
+        <div className="p-4 sm:p-8 max-w-2xl mx-auto">
             <Card>
                 <CardHeader>
-                    <CardTitle>Nueva Historia</CardTitle>
+                    <CardTitle className="text-xl">Nueva Historia</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -65,7 +65,7 @@ export default function NewStoryPage() {
                             <Label htmlFor="cover_url">URL de Portada (Opcional)</Label>
                             <Input id="cover_url" name="cover_url" placeholder="https://ejemplo.com/imagen.jpg" />
                         </div>
-                        <div className="flex justify-end gap-4 pt-4">
+                        <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-4">
                             <Button type="button" variant="ghost" onClick={() => router.back()}>
                                 Cancelar
                             </Button>

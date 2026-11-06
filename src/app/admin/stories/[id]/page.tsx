@@ -21,35 +21,35 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
     const chapters = await getChapters(story.id)
 
     return (
-        <div className="p-8 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
+        <div className="p-4 sm:p-8 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
             <div>
-                <h1 className="text-3xl font-bold mb-2">Información General</h1>
-                <p className="text-muted-foreground">Configura los detalles principales de tu historia.</p>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-2">Información General</h1>
+                <p className="text-muted-foreground text-sm">Configura los detalles principales de tu historia.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="md:col-span-2 space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Metadatos</CardTitle>
+                            <CardTitle className="text-lg">Metadatos</CardTitle>
                             <CardDescription>Esta información es la que verán los lectores en el catálogo.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
                                 <Label>Título de la Historia</Label>
-                                <Input value={story.title} readOnly className="bg-slate-50 cursor-not-allowed" />
+                                <Input value={story.title} readOnly className="bg-slate-50 cursor-not-allowed text-sm" />
                                 <p className="text-[10px] text-muted-foreground italic">El título se define al crear la historia.</p>
                             </div>
                             <div className="space-y-2">
                                 <Label>Autor</Label>
-                                <Input value={story.author_name || ''} readOnly className="bg-slate-50 cursor-not-allowed" placeholder="Autor anónimo" />
+                                <Input value={story.author_name || ''} readOnly className="bg-slate-50 cursor-not-allowed text-sm" placeholder="Autor anónimo" />
                             </div>
                             <div className="space-y-2">
                                 <Label>Sinopsis</Label>
                                 <Textarea
                                     value={story.synopsis || ''}
                                     readOnly
-                                    className="bg-slate-50 cursor-not-allowed min-h-[120px]"
+                                    className="bg-slate-50 cursor-not-allowed min-h-[120px] text-sm"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -57,7 +57,7 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
                                 <Input
                                     value={story.cover_url || ''}
                                     readOnly
-                                    className="bg-slate-50 cursor-not-allowed"
+                                    className="bg-slate-50 cursor-not-allowed text-sm"
                                     placeholder="https://ejemplo.com/imagen.jpg"
                                 />
                             </div>
@@ -82,7 +82,7 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
                                 title="¿Eliminar historia completa?"
                                 description={`¿Estás seguro de que quieres borrar "${story.title}" y todos sus capítulos asociados?`}
                                 label="Eliminar Historia Definitivamente"
-                                className="w-full justify-center py-6 border-red-200"
+                                className="w-full justify-center py-6 border-red-200 text-xs sm:text-sm"
                             />
                         </CardContent>
                     </Card>
@@ -91,7 +91,7 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
                 <div className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Estado de Publicación</CardTitle>
+                            <CardTitle className="text-lg">Estado de Publicación</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="flex flex-col gap-4">

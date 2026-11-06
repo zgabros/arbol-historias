@@ -2,8 +2,9 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Book, Settings, Plus, Star, ChevronRight, LayoutDashboard, Globe, Waypoints } from 'lucide-react'
+import { Book, Settings, Plus, Star, ChevronRight, LayoutDashboard, Globe, Waypoints, X, Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useState } from 'react'
 
 interface Chapter {
     id: string
@@ -22,12 +23,13 @@ interface StorySidebarProps {
 
 export default function StorySidebar({ story, chapters }: StorySidebarProps) {
     const pathname = usePathname()
+    const [isOpen, setIsOpen] = useState(false)
 
     const isSettingsActive = pathname === `/admin/stories/${story.id}`
     const isNewChapterActive = pathname === `/admin/stories/${story.id}/chapters/new`
 
-    return (
-        <aside className="w-72 border-r bg-slate-50/50 flex flex-col h-screen sticky top-0">
+    const NavContent = () => (
+        <div className="flex flex-col h-full">
             <div className="p-4 border-b bg-white">
                 <Link
                     href="/admin"
@@ -42,42 +44,35 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
             </div>
 
             <nav className="flex-1 overflow-y-auto p-4 space-y-6">
-                {/* Story Metadata Link */}
                 <div className="space-y-1">
                     <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-70">General</p>
                     <Link
                         href={`/admin/stories/${story.id}`}
+                        onClick={() => setIsOpen(false)}
                         className={cn(
                             "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                            isSettingsActive
-                                ? "bg-primary text-primary-foreground shadow-sm"
-                                : "text-muted-foreground hover:bg-slate-100"
+                            isSettingsActive ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-slate-100"
                         )}
                     >
                         <Settings className="w-4 h-4" /> Configuración
                     </Link>
                     <Link
                         href={`/admin/stories/${story.id}/map`}
+                        onClick={() => setIsOpen(false)}
                         className={cn(
                             "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                            pathname === `/admin/stories/${story.id}/map`
-                                ? "bg-primary text-primary-foreground shadow-sm"
-                                : "text-muted-foreground hover:bg-slate-100"
+                            pathname === `/admin/stories/${story.id}/map` ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-slate-100"
                         )}
                     >
                         <Waypoints className="w-4 h-4" /> Mapa de Nodos
                     </Link>
                 </div>
 
-                {/* Chapters Section */}
                 <div className="space-y-1">
                     <div className="flex items-center justify-between px-2 mb-2">
                         <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-70">Capítulos</p>
-                        <Link href={`/admin/stories/${story.id}/chapters/new`}>
-                            <Plus className={cn(
-                                "w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer transition-colors",
-                                isNewChapterActive && "text-primary font-bold"
-                            )} />
+                        <Link href={`/admin/stories/${story.id}/chapters/new`} onClick={() => setIsOpen(false)}>
+                            <Plus className={cn("w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer transition-colors", isNewChapterActive && "text-primary font-bold")} />
                         </Link>
                     </div>
 
@@ -91,47 +86,37 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
                                     <Link
                                         key={chapter.id}
                                         href={`/admin/stories/${story.id}/chapters/${chapter.id}`}
+                                        onClick={() => setIsOpen(false)}
                                         className={cn(
                                             "group flex items-center justify-between px-3 py-2 rounded-md text-sm transition-all",
-                                            isActive
-                                                ? "bg-white border shadow-sm text-primary font-semibold"
-                                                : "text-muted-foreground hover:bg-slate-100"
+                                            isActive ? "bg-white border shadow-sm text-primary font-semibold" : "text-muted-foreground hover:bg-slate-100"
                                         )}
                                     >
                                         <div className="flex items-center gap-2 truncate">
-                                            {chapter.is_starting_chapter ? (
-                                                <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500 flex-shrink-0" />
-                                            ) : (
-                                                <ChevronRight className={cn(
-                                                    "w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0",
-                                                    isActive && "opacity-100"
-                                                )} />
-                                            )}
+                                            {chapter.is_starting_chapter ? <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500 flex-shrink-0" /> : <ChevronRight className={cn("w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0", isActive && "opacity-100")} />}
                                             <span className="truncate">{chapter.title}</span>
                                         </div>
-                                        {chapter.status === 'published' && (
-                                            <Globe className="w-3 h-3 text-green-500 flex-shrink-0 ml-1" />
-                                        )}
+                                        {chapter.status === 'published' && <Globe className="w-3 h-3 text-green-500 flex-shrink-0 ml-1" />}
                                     </Link>
                                 )
                             })
                         )}
                     </div>
-
-                    <Link href={`/admin/stories/${story.id}/chapters/new`}>
-                        <button className={cn(
-                            "w-full flex items-center gap-2 px-3 py-2 mt-4 border border-dashed rounded-md text-sm text-muted-foreground hover:border-primary hover:text-primary hover:bg-white transition-all",
-                            isNewChapterActive && "border-primary text-primary bg-white"
-                        )}>
-                            <Plus className="w-4 h-4" /> Nuevo Capítulo
-                        </button>
-                    </Link>
                 </div>
             </nav>
+        </div>
+    )
 
-            <div className="p-4 border-t bg-white">
-                <p className="text-[10px] text-center text-muted-foreground">Árbol de Historias &bull; CMS</p>
-            </div>
-        </aside>
+    return (
+        <>
+            <button className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white border rounded-md shadow-sm" onClick={() => setIsOpen(!isOpen)}>
+                {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+
+            <aside className={cn("fixed inset-y-0 left-0 z-40 w-72 border-r bg-slate-50/50 transform transition-transform duration-300 lg:translate-x-0 lg:static lg:h-screen lg:block", isOpen ? "translate-x-0" : "-translate-x-full")}>
+                <NavContent />
+            </aside>
+            {isOpen && <div className="fixed inset-0 bg-black/20 z-30 lg:hidden" onClick={() => setIsOpen(false)} />}
+        </>
     )
 }

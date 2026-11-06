@@ -21,7 +21,7 @@ export default async function StoryEditorLayout({
     return (
         <div className="flex min-h-screen bg-white">
             <StorySidebar story={story} chapters={chapters} />
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1 overflow-y-auto w-full pt-16 lg:pt-0">
                 {children}
             </main>
         </div>

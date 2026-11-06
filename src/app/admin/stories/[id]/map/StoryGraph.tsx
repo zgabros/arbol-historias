@@ -144,7 +144,7 @@ export default function StoryGraph({ storyId, chapters, options }: StoryGraphPro
     }, [router, storyId])
 
     return (
-        <div style={{ width: '100%', height: 'calc(100vh - 120px)' }} className="border rounded-xl overflow-hidden bg-slate-50/50 shadow-inner">
+        <div style={{ width: '100%', height: '100%', minHeight: '500px' }} className="border rounded-xl overflow-hidden bg-slate-50/50 shadow-inner">
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -162,7 +162,7 @@ export default function StoryGraph({ storyId, chapters, options }: StoryGraphPro
                         return node.data?.is_starting_chapter ? '#eab308' : '#cbd5e1'
                     }} 
                 />
-                <Panel position="top-left" className="bg-white/80 backdrop-blur-md p-3 rounded-lg border shadow-sm text-sm">
+                <Panel position="top-left" className="bg-white/80 backdrop-blur-md p-3 rounded-lg border shadow-sm text-sm hidden sm:block">
                     <p className="font-semibold mb-1">Mapa de la Historia</p>
                     <p className="text-muted-foreground text-xs">Usa el mouse para navegar. Haz clic en un bloque para editarlo.</p>
                 </Panel>

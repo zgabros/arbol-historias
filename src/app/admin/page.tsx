@@ -11,16 +11,16 @@ export default async function AdminDashboard() {
     const stories = await getStories()
 
     return (
-        <div className="p-8 max-w-6xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
+        <div className="p-4 sm:p-8 max-w-6xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold">Mis Historias</h1>
-                    <p className="text-muted-foreground">Gestiona tus novelas interactivas</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold">Mis Historias</h1>
+                    <p className="text-muted-foreground text-sm">Gestiona tus novelas interactivas</p>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
                     <ThemeToggle />
                     <Link href="/admin/stories/new">
-                        <Button className="flex gap-2">
+                        <Button className="flex gap-2 text-xs sm:text-sm">
                             <Plus className="w-4 h-4" /> Nueva Historia
                         </Button>
                     </Link>
@@ -44,9 +44,9 @@ export default async function AdminDashboard() {
                     {stories.map((story) => (
                         <Card key={story.id} className="hover:shadow-md transition-shadow">
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Book className="w-5 h-5 text-primary" />
-                                    {story.title}
+                                <CardTitle className="flex items-center gap-2 text-lg">
+                                    <Book className="w-5 h-5 text-primary shrink-0" />
+                                    <span className="truncate">{story.title}</span>
                                 </CardTitle>
                                 <CardDescription className="line-clamp-2">{story.synopsis}</CardDescription>
                             </CardHeader>
@@ -65,7 +65,7 @@ export default async function AdminDashboard() {
                                         iconOnly
                                     />
                                     <Link href={`/admin/stories/${story.id}`}>
-                                        <Button variant="ghost" size="sm">Editar Capítulos</Button>
+                                        <Button variant="ghost" size="sm">Editar</Button>
                                     </Link>
                                 </div>
                             </CardContent>

@@ -24,7 +24,6 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
     const [newChapterTitle, setNewChapterTitle] = useState('')
     const [creatingNext, setCreatingNext] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
     useEffect(() => {
         async function loadData() {
@@ -126,30 +125,27 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
     if (loading) return <div className="p-8 flex justify-center"><Loader2 className="animate-spin" /></div>
     if (!chapter) return <div className="p-8">Capítulo no encontrado</div>
 
-    const filteredChapters = allChapters.filter(c =>
-        c.title.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-
     return (
-        <div className="p-8 max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
-            <div className="flex justify-between items-center bg-card p-4 rounded-lg border shadow-sm sticky top-0 z-10">
+        <div className="p-4 sm:p-8 max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
+            {/* Barra superior del editor de capítulo, responsiva con scroll horizontal o flex wrap */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-4 rounded-lg border shadow-sm sticky top-12 sm:top-0 z-30">
                 <div className="flex items-center gap-2">
-                    <h2 className="text-xl font-bold truncate max-w-[300px]">{chapter.title}</h2>
-                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${chapter.status === 'published' ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300' : 'bg-muted text-muted-foreground'}`}>
+                    <h2 className="text-lg sm:text-xl font-bold truncate max-w-[200px] sm:max-w-[300px]">{chapter.title}</h2>
+                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded shrink-0 ${chapter.status === 'published' ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300' : 'bg-muted text-muted-foreground'}`}>
                         {chapter.status === 'published' ? 'Publicado' : 'Borrador'}
                     </span>
                 </div>
-                <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => handleSave()} disabled={saving}>
-                        {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                        Guardar Borrador
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
+                    <Button variant="outline" size="sm" onClick={() => handleSave()} disabled={saving} className="text-xs">
+                        {saving ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Save className="mr-1 h-3 w-3" />}
+                        Guardar
                     </Button>
-                    <Button onClick={async () => {
+                    <Button size="sm" className="text-xs" onClick={async () => {
                         setChapter({ ...chapter, status: 'published' })
                         await updateChapter(chapter.id, { status: 'published' })
                         toast.success('¡Publicado!')
                     }}>
-                        <Globe className="mr-2 h-4 w-4" /> Publicar
+                        <Globe className="mr-1 h-3 w-3" /> Publicar
                     </Button>
                     <DeleteButton
                         onDelete={async () => {
@@ -168,9 +164,9 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                 <div className="lg:col-span-2 space-y-6">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>Contenido del Capítulo</CardTitle>
+                            <CardTitle className="text-base sm:text-lg">Contenido del Capítulo</CardTitle>
                             <div className="flex items-center gap-2">
-                                <Label htmlFor="start" className="text-xs cursor-pointer">Capítulo Inicial</Label>
+                                <Label htmlFor="start" className="text-xs cursor-pointer">Inicial</Label>
                                 <input
                                     type="checkbox"
                                     id="start"
@@ -187,7 +183,7 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                             <div className="space-y-2">
                                 <Label>Texto de la Historia</Label>
                                 <Textarea
-                                    className="min-h-[400px] leading-relaxed italic"
+                                    className="min-h-[300px] sm:min-h-[400px] leading-relaxed italic text-sm sm:text-base"
                                     value={chapter.content || ''}
                                     onChange={e => setChapter({ ...chapter, content: e.target.value })}
                                     placeholder="Escribe o pega aquí el contenido del capítulo..."
@@ -201,10 +197,10 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                     <Card>
                         <CardHeader>
                             <div className="flex items-center justify-between">
-                                <CardTitle className="text-lg">Decisiones / Opciones</CardTitle>
+                                <CardTitle className="text-base sm:text-lg">Decisiones</CardTitle>
                                 <Button size="icon" variant="ghost" onClick={handleAddOption} title="Añadir opción vacía"><Plus className="w-4 h-4" /></Button>
                             </div>
-                            <div className="mt-4 flex gap-2">
+                            <div className="mt-4 flex flex-col sm:flex-row gap-2">
                                 <Input
                                     placeholder="Nombre del siguiente capítulo..."
                                     value={newChapterTitle}
@@ -228,13 +224,13 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                                             value={option.label}
                                             onChange={e => handleOptionLocalChange(option.id, { label: e.target.value })}
                                             onBlur={e => handleUpdateOption(option.id, { label: e.target.value })}
-                                            className="bg-card"
+                                            className="bg-card text-xs sm:text-sm"
                                         />
                                     </div>
                                     <div className="space-y-1">
                                         <Label className="text-[10px] uppercase font-bold text-muted-foreground">Capítulo Destino</Label>
                                         <select
-                                            className="w-full p-2 text-sm border rounded-md bg-card text-foreground"
+                                            className="w-full p-2 text-xs sm:text-sm border rounded-md bg-card text-foreground"
                                             value={option.target_chapter_id || ''}
                                             onChange={e => {
                                                 const val = e.target.value || null
@@ -254,7 +250,7 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                                         <div className="space-y-1">
                                             <Label className="text-[10px] uppercase font-bold text-muted-foreground italic">Necesita Objeto</Label>
                                             <Input
-                                                placeholder="Ej: llave_roja"
+                                                placeholder="Ej: llave"
                                                 className="h-7 text-xs bg-card"
                                                 value={option.required_flags?.item || ''}
                                                 onChange={e => handleOptionLocalChange(option.id, { required_flags: { ...option.required_flags, item: e.target.value } })}
@@ -273,7 +269,7 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                                         </div>
                                     </div>
 
-                                    <Button variant="ghost" size="sm" className="w-full text-red-500 hover:text-red-600 h-8" onClick={() => handleDeleteOption(option.id)}>
+                                    <Button variant="ghost" size="sm" className="w-full text-red-500 hover:text-red-600 h-8 text-xs" onClick={() => handleDeleteOption(option.id)}>
                                         <Trash2 className="w-3 h-3 mr-2" /> Eliminar opción
                                     </Button>
                                 </div>

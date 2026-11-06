@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Book, Settings, Plus, Star, ChevronRight, LayoutDashboard, Globe, Waypoints } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 interface Chapter {
     id: string
@@ -27,14 +28,17 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
     const isNewChapterActive = pathname === `/admin/stories/${story.id}/chapters/new`
 
     return (
-        <aside className="w-72 border-r bg-slate-50/50 flex flex-col h-screen sticky top-0">
-            <div className="p-4 border-b bg-white">
-                <Link
-                    href="/admin"
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-4"
-                >
-                    <LayoutDashboard className="w-4 h-4" /> Panel de Control
-                </Link>
+        <aside className="w-72 border-r bg-background/50 flex flex-col h-screen sticky top-0">
+            <div className="p-4 border-b bg-card">
+                <div className="flex items-center justify-between mb-4">
+                    <Link
+                        href="/admin"
+                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                        <LayoutDashboard className="w-4 h-4" /> Panel de Control
+                    </Link>
+                    <ThemeToggle className="scale-75 origin-right h-8 w-8" />
+                </div>
                 <div className="flex items-center gap-2 px-1">
                     <Book className="w-5 h-5 text-primary" />
                     <h2 className="font-bold truncate" title={story.title}>{story.title}</h2>
@@ -51,7 +55,7 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
                             "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                             isSettingsActive
                                 ? "bg-primary text-primary-foreground shadow-sm"
-                                : "text-muted-foreground hover:bg-slate-100"
+                                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                         )}
                     >
                         <Settings className="w-4 h-4" /> Configuración
@@ -62,7 +66,7 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
                             "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                             pathname === `/admin/stories/${story.id}/map`
                                 ? "bg-primary text-primary-foreground shadow-sm"
-                                : "text-muted-foreground hover:bg-slate-100"
+                                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                         )}
                     >
                         <Waypoints className="w-4 h-4" /> Mapa de Nodos
@@ -94,8 +98,8 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
                                         className={cn(
                                             "group flex items-center justify-between px-3 py-2 rounded-md text-sm transition-all",
                                             isActive
-                                                ? "bg-white border shadow-sm text-primary font-semibold"
-                                                : "text-muted-foreground hover:bg-slate-100"
+                                                ? "bg-card border shadow-sm text-primary font-semibold"
+                                                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                                         )}
                                     >
                                         <div className="flex items-center gap-2 truncate">
@@ -120,8 +124,8 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
 
                     <Link href={`/admin/stories/${story.id}/chapters/new`}>
                         <button className={cn(
-                            "w-full flex items-center gap-2 px-3 py-2 mt-4 border border-dashed rounded-md text-sm text-muted-foreground hover:border-primary hover:text-primary hover:bg-white transition-all",
-                            isNewChapterActive && "border-primary text-primary bg-white"
+                            "w-full flex items-center gap-2 px-3 py-2 mt-4 border border-dashed rounded-md text-sm text-muted-foreground hover:border-primary hover:text-primary hover:bg-card transition-all",
+                            isNewChapterActive && "border-primary text-primary bg-card"
                         )}>
                             <Plus className="w-4 h-4" /> Nuevo Capítulo
                         </button>
@@ -129,7 +133,7 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
                 </div>
             </nav>
 
-            <div className="p-4 border-t bg-white">
+            <div className="p-4 border-t bg-card">
                 <p className="text-[10px] text-center text-muted-foreground">Árbol de Historias &bull; CMS</p>
             </div>
         </aside>

@@ -19,7 +19,7 @@ export default async function StoryEditorLayout({
     const chapters = await getChapters(story.id)
 
     return (
-        <div className="flex min-h-screen bg-white">
+        <div className="flex min-h-screen bg-background">
             <StorySidebar story={story} chapters={chapters} />
             <main className="flex-1 overflow-y-auto">
                 {children}

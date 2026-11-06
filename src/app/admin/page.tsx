@@ -5,6 +5,7 @@ import { Plus, Book } from 'lucide-react'
 import Link from 'next/link'
 import DeleteButton from '@/components/DeleteButton'
 import { deleteStory } from './stories/actions'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export default async function AdminDashboard() {
     const stories = await getStories()
@@ -16,11 +17,14 @@ export default async function AdminDashboard() {
                     <h1 className="text-3xl font-bold">Mis Historias</h1>
                     <p className="text-muted-foreground">Gestiona tus novelas interactivas</p>
                 </div>
-                <Link href="/admin/stories/new">
-                    <Button className="flex gap-2">
-                        <Plus className="w-4 h-4" /> Nueva Historia
-                    </Button>
-                </Link>
+                <div className="flex items-center gap-4">
+                    <ThemeToggle />
+                    <Link href="/admin/stories/new">
+                        <Button className="flex gap-2">
+                            <Plus className="w-4 h-4" /> Nueva Historia
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             {stories.length === 0 ? (
@@ -47,7 +51,7 @@ export default async function AdminDashboard() {
                                 <CardDescription className="line-clamp-2">{story.synopsis}</CardDescription>
                             </CardHeader>
                             <CardContent className="flex justify-between items-center">
-                                <span className={`text-xs px-2 py-1 rounded-full ${story.is_published ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                <span className={`text-xs px-2 py-1 rounded-full ${story.is_published ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300'}`}>
                                     {story.is_published ? 'Publicada' : 'Borrador'}
                                 </span>
                                 <div className="flex gap-2">

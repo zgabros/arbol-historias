@@ -84,9 +84,6 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
     async function handleUpdateOption(optionId: string, updates: any) {
         try {
             await updateOption(optionId, updates, chapter.id)
-            // No need to fetch the whole chapter again if we just updated a label
-            // but we might want to keep it to be sure. However, for smoothness, 
-            // we'll avoid it if it's just a simple sync.
         } catch (error) {
             toast.error('Error al actualizar opción')
         }
@@ -135,10 +132,10 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
 
     return (
         <div className="p-8 max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
-            <div className="flex justify-between items-center bg-white p-4 rounded-lg border shadow-sm sticky top-0 z-10">
+            <div className="flex justify-between items-center bg-card p-4 rounded-lg border shadow-sm sticky top-0 z-10">
                 <div className="flex items-center gap-2">
                     <h2 className="text-xl font-bold truncate max-w-[300px]">{chapter.title}</h2>
-                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${chapter.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                    <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${chapter.status === 'published' ? 'bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300' : 'bg-muted text-muted-foreground'}`}>
                         {chapter.status === 'published' ? 'Publicado' : 'Borrador'}
                     </span>
                 </div>
@@ -224,20 +221,20 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                         <CardContent className="space-y-4">
                             {chapter.options?.length === 0 && <p className="text-sm text-muted-foreground italic">No hay opciones. Este podría ser un final.</p>}
                             {chapter.options?.map((option: any) => (
-                                <div key={option.id} className="p-3 border rounded-lg space-y-3 bg-slate-50">
+                                <div key={option.id} className="p-3 border rounded-lg space-y-3 bg-muted/30">
                                     <div className="space-y-1">
                                         <Label className="text-[10px] uppercase font-bold text-muted-foreground">Etiqueta del botón</Label>
                                         <Input
                                             value={option.label}
                                             onChange={e => handleOptionLocalChange(option.id, { label: e.target.value })}
                                             onBlur={e => handleUpdateOption(option.id, { label: e.target.value })}
-                                            className="bg-white"
+                                            className="bg-card"
                                         />
                                     </div>
                                     <div className="space-y-1">
                                         <Label className="text-[10px] uppercase font-bold text-muted-foreground">Capítulo Destino</Label>
                                         <select
-                                            className="w-full p-2 text-sm border rounded-md bg-white"
+                                            className="w-full p-2 text-sm border rounded-md bg-card text-foreground"
                                             value={option.target_chapter_id || ''}
                                             onChange={e => {
                                                 const val = e.target.value || null
@@ -258,7 +255,7 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                                             <Label className="text-[10px] uppercase font-bold text-muted-foreground italic">Necesita Objeto</Label>
                                             <Input
                                                 placeholder="Ej: llave_roja"
-                                                className="h-7 text-xs bg-white"
+                                                className="h-7 text-xs bg-card"
                                                 value={option.required_flags?.item || ''}
                                                 onChange={e => handleOptionLocalChange(option.id, { required_flags: { ...option.required_flags, item: e.target.value } })}
                                                 onBlur={e => handleUpdateOption(option.id, { required_flags: { ...option.required_flags, item: e.target.value } })}
@@ -268,7 +265,7 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                                             <Label className="text-[10px] uppercase font-bold text-muted-foreground italic">Gana Objeto</Label>
                                             <Input
                                                 placeholder="Ej: espada"
-                                                className="h-7 text-xs bg-white text-blue-600"
+                                                className="h-7 text-xs bg-card text-primary font-medium"
                                                 value={option.set_flags?.add_item || ''}
                                                 onChange={e => handleOptionLocalChange(option.id, { set_flags: { ...option.set_flags, add_item: e.target.value } })}
                                                 onBlur={e => handleUpdateOption(option.id, { set_flags: { ...option.set_flags, add_item: e.target.value } })}

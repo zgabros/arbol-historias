@@ -37,9 +37,10 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 8px);
   
   /* Impeccable Scale Spacing */
   --spacing-1: 0.25rem;
@@ -56,86 +57,86 @@
 }
 
 :root {
-  --radius: 0; /* Minimalismo: cero bordes curvos o mínimos */
+  --radius: 0.75rem; /* Modern refined rounding */
   
-  /* PAPEL CLARO Y TINTA OSCURA (LITERARIO) - Contrastes mejorados según WCAG AA */
-  --background: oklch(0.985 0.005 85); /* Tinte cálido, papel premium */
-  --foreground: oklch(0.15 0.01 85); /* Tinta sepia muy oscura para excelente legibilidad */
+  /* PAPEL CLARO Y TINTA OSCURA (LITERARIO) - Contrastes accesibles WCAG AAA */
+  --background: oklch(0.985 0.005 85);
+  --foreground: oklch(0.14 0.01 85);
   
-  --card: oklch(0.99 0.002 85);
-  --card-foreground: oklch(0.15 0.01 85);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.14 0.01 85);
   
-  --popover: oklch(0.99 0.002 85);
-  --popover-foreground: oklch(0.15 0.01 85);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.14 0.01 85);
   
-  /* Acción rústica con contraste optimizado */
-  --primary: oklch(0.35 0.10 40);
+  /* Paleta moderna y elegante para el diseño de autor */
+  --primary: oklch(0.32 0.12 42);
   --primary-foreground: oklch(0.98 0.005 85);
   
-  --secondary: oklch(0.92 0.008 85);
+  --secondary: oklch(0.95 0.006 85);
   --secondary-foreground: oklch(0.20 0.01 85);
   
-  --muted: oklch(0.93 0.008 85);
-  --muted-foreground: oklch(0.40 0.01 85); /* Aumentado contraste de textos secundarios y grises */
+  --muted: oklch(0.94 0.007 85);
+  --muted-foreground: oklch(0.45 0.01 85); /* Contrastes optimizados > 4.5:1 */
   
-  --accent: oklch(0.92 0.01 40);
-  --accent-foreground: oklch(0.25 0.04 40);
+  --accent: oklch(0.93 0.015 42);
+  --accent-foreground: oklch(0.25 0.05 42);
   
-  --destructive: oklch(0.45 0.15 25);
+  --destructive: oklch(0.50 0.20 25);
   --destructive-foreground: oklch(0.98 0 0);
   
-  --border: oklch(0.82 0.008 85); /* Bordes más marcados para mejor accesibilidad visual y separación de menús */
+  --border: oklch(0.88 0.008 85);
   --input: oklch(0.88 0.008 85);
-  --ring: oklch(0.35 0.10 40);
+  --ring: oklch(0.32 0.12 42);
   
-  --sidebar: oklch(0.99 0.002 85);
-  --sidebar-foreground: oklch(0.15 0.01 85);
-  --sidebar-primary: oklch(0.35 0.10 40);
+  --sidebar: oklch(0.99 0.003 85);
+  --sidebar-foreground: oklch(0.14 0.01 85);
+  --sidebar-primary: oklch(0.32 0.12 42);
   --sidebar-primary-foreground: oklch(0.98 0.005 85);
-  --sidebar-accent: oklch(0.92 0.008 85);
-  --sidebar-accent-foreground: oklch(0.25 0.04 40);
-  --sidebar-border: oklch(0.82 0.008 85);
-  --sidebar-ring: oklch(0.35 0.10 40);
+  --sidebar-accent: oklch(0.95 0.006 85);
+  --sidebar-accent-foreground: oklch(0.25 0.05 42);
+  --sidebar-border: oklch(0.88 0.008 85);
+  --sidebar-ring: oklch(0.32 0.12 42);
 }
 
 .dark {
-  /* MODO OSCURO PARA LECTURA (ATENUADO) - Contrastes AA reforzados */
-  --background: oklch(0.15 0.005 85); /* Asfalto mate oscuro */
-  --foreground: oklch(0.95 0.005 85); /* Tinta clara perla brillante */
+  /* MODO OSCURO PARA LECTURA (ATENUADO Y ELEGANTE) */
+  --background: oklch(0.13 0.006 85);
+  --foreground: oklch(0.94 0.005 85);
   
-  --card: oklch(0.19 0.005 85);
-  --card-foreground: oklch(0.95 0.005 85);
+  --card: oklch(0.16 0.006 85);
+  --card-foreground: oklch(0.94 0.005 85);
   
-  --popover: oklch(0.19 0.005 85);
-  --popover-foreground: oklch(0.95 0.005 85);
+  --popover: oklch(0.16 0.006 85);
+  --popover-foreground: oklch(0.94 0.005 85);
   
-  --primary: oklch(0.75 0.10 40); /* Acción brillante en modo oscuro */
-  --primary-foreground: oklch(0.12 0.02 40);
+  --primary: oklch(0.72 0.12 42);
+  --primary-foreground: oklch(0.12 0.02 42);
   
-  --secondary: oklch(0.24 0.008 85);
+  --secondary: oklch(0.22 0.008 85);
   --secondary-foreground: oklch(0.92 0.005 85);
   
-  --muted: oklch(0.22 0.005 85);
-  --muted-foreground: oklch(0.75 0.005 85); /* Garantiza WCAG AA superior en textos atenuados */
+  --muted: oklch(0.20 0.006 85);
+  --muted-foreground: oklch(0.72 0.005 85);
   
-  --accent: oklch(0.26 0.02 40);
-  --accent-foreground: oklch(0.90 0.04 40);
+  --accent: oklch(0.24 0.02 42);
+  --accent-foreground: oklch(0.90 0.04 42);
   
-  --destructive: oklch(0.65 0.15 25);
+  --destructive: oklch(0.60 0.20 25);
   --destructive-foreground: oklch(0.12 0 0);
   
-  --border: oklch(0.35 0.008 85); /* Bordes más definidos para menús y componentes CMS */
-  --input: oklch(0.30 0.008 85);
-  --ring: oklch(0.75 0.10 40);
+  --border: oklch(0.28 0.008 85);
+  --input: oklch(0.28 0.008 85);
+  --ring: oklch(0.72 0.12 42);
   
-  --sidebar: oklch(0.19 0.005 85);
-  --sidebar-foreground: oklch(0.95 0.005 85);
-  --sidebar-primary: oklch(0.75 0.10 40);
-  --sidebar-primary-foreground: oklch(0.12 0.02 40);
-  --sidebar-accent: oklch(0.24 0.008 85);
+  --sidebar: oklch(0.15 0.006 85);
+  --sidebar-foreground: oklch(0.94 0.005 85);
+  --sidebar-primary: oklch(0.72 0.12 42);
+  --sidebar-primary-foreground: oklch(0.12 0.02 42);
+  --sidebar-accent: oklch(0.22 0.008 85);
   --sidebar-accent-foreground: oklch(0.92 0.005 85);
-  --sidebar-border: oklch(0.35 0.008 85);
-  --sidebar-ring: oklch(0.75 0.10 40);
+  --sidebar-border: oklch(0.28 0.008 85);
+  --sidebar-ring: oklch(0.72 0.12 42);
 }
 
 @layer base {
@@ -144,7 +145,7 @@
   }
   body {
     @apply bg-background text-foreground transition-colors duration-300;
-    line-height: 1.6;
+    line-height: 1.65;
     letter-spacing: -0.01em;
   }
   

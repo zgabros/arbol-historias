@@ -33,7 +33,7 @@ export default async function HomePage() {
             {stories.map((story, index) => (
               <article key={story.id} className={`group flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} gap-16 md:gap-32 items-center`}>
                 {story.cover_url && (
-                  <div className="w-full md:w-5/12 aspect-[3/4] relative overflow-hidden bg-muted border rounded-md">
+                  <div className="w-full md:w-5/12 aspect-[16/9] relative overflow-hidden bg-muted border rounded-md">
                     <Image
                       src={story.cover_url}
                       alt={`Portada del libro ${story.title}`}

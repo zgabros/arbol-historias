@@ -46,28 +46,26 @@ export default function ChapterDisplay({
             {/* Decisiones */}
             <section className="mt-32 pt-16 border-t border-border/50" aria-label="Opciones y decisiones">
                 {visibleOptions && visibleOptions.length > 0 ? (
-                    <div className="flex flex-col gap-8 md:gap-12">
+                    <div className="flex flex-col gap-5 md:gap-6">
                         {visibleOptions.map((option: any) => (
                             <Link
                                 key={option.id}
                                 href={`/story/${slug}/${option.target_chapter_id}`}
-                                className="group block focus:outline-none focus-visible:ring-4 focus-visible:ring-ring rounded-lg p-2 transition-all"
+                                className="group relative flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 md:p-6 rounded-xl bg-card border-2 border-border/80 shadow-xs hover:border-primary/60 hover:bg-accent/40 hover:shadow-md transition-all duration-300 focus:outline-none focus-visible:ring-4 focus-visible:ring-ring"
                                 onClick={() => handleOptionClick(option)}
                             >
-                                <div className="flex flex-col md:flex-row md:items-center gap-4 text-left">
-                                    <div className="flex-1 font-serif text-[1.5rem] md:text-[2rem] leading-tight text-secondary-foreground group-hover:text-primary transition-colors duration-500 max-w-[30ch]">
-                                        {option.label}
-                                    </div>
-                                    <div className="flex items-center gap-4 mt-2 md:mt-0">
-                                        {option.set_flags?.add_item && (
-                                            <span className="text-xs bg-primary/10 text-primary px-3 py-1.5 uppercase font-sans tracking-[0.2em] font-bold">
-                                                + {option.set_flags.add_item}
-                                            </span>
-                                        )}
-                                        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 md:translate-x-[-10px] group-hover:translate-x-0" aria-hidden="true">
-                                            <div className="w-12 h-[1px] bg-primary"></div>
-                                            <ArrowRight className="w-4 h-4 text-primary ml-1" />
-                                        </div>
+                                <div className="flex-1 font-serif text-[1.2rem] md:text-[1.35rem] leading-snug text-foreground group-hover:text-primary transition-colors duration-300">
+                                    {option.label}
+                                </div>
+                                <div className="flex items-center gap-4 shrink-0">
+                                    {option.set_flags?.add_item && (
+                                        <span className="text-xs bg-primary/15 text-primary px-3 py-1 rounded-md uppercase font-sans tracking-[0.15em] font-bold border border-primary/20">
+                                            + {option.set_flags.add_item}
+                                        </span>
+                                    )}
+                                    <div className="flex items-center gap-2 text-primary font-sans text-xs uppercase tracking-wider font-semibold opacity-80 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" aria-hidden="true">
+                                        <span>Elegir</span>
+                                        <ArrowRight className="w-4 h-4" />
                                     </div>
                                 </div>
                             </Link>

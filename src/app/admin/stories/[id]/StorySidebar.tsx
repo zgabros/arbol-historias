@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Book, Settings, Plus, Star, ChevronRight, LayoutDashboard, Globe, Waypoints, Menu, X } from 'lucide-react'
+import { Book, Settings, Plus, Star, ChevronRight, Globe, GitFork, Menu, X, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { useState, useEffect } from 'react'
@@ -26,7 +26,6 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
     const pathname = usePathname()
     const [isOpen, setIsOpen] = useState(false)
 
-    // Cerrar sidebar al cambiar de ruta en mobile
     useEffect(() => {
         setIsOpen(false)
     }, [pathname])
@@ -36,12 +35,12 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
 
     return (
         <>
-            {/* Botón flotante para abrir sidebar en Mobile con atributos de accesibilidad a11y */}
+            {/* Botón flotante para abrir sidebar en Mobile */}
             <div className="lg:hidden fixed top-3 left-3 z-50">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="p-2.5 rounded-md bg-card border-2 shadow-md text-foreground flex items-center justify-center hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
-                    aria-label={isOpen ? "Cerrar menú de navegación de la historia" : "Abrir menú de navegación de la historia"}
+                    className="p-2.5 rounded-md bg-card border shadow-md text-foreground flex items-center justify-center hover:bg-accent"
+                    aria-label={isOpen ? 'Cerrar menú del escritorio' : 'Abrir menú del escritorio'}
                     aria-expanded={isOpen}
                     aria-controls="story-navigation-sidebar"
                 >
@@ -49,89 +48,97 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
                 </button>
             </div>
 
-            {/* Backdrop en mobile */}
             {isOpen && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-xs"
                     onClick={() => setIsOpen(false)}
                     aria-hidden="true"
                 />
             )}
 
-            {/* Sidebar real con rol de navegación de accesibilidad */}
-            <aside 
+            <aside
                 id="story-navigation-sidebar"
-                aria-label={`Menú de navegación para ${story.title}`}
+                aria-label={`Escritorio para ${story.title}`}
                 className={cn(
-                    "w-72 border-r bg-background/95 lg:bg-background/95 flex flex-col h-screen fixed lg:sticky top-0 z-40 transition-transform duration-300 ease-in-out shadow-sm",
-                    isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+                    'w-72 border-r bg-background/95 flex flex-col h-screen fixed lg:sticky top-0 z-40 transition-transform duration-300 ease-in-out shadow-sm',
+                    isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
                 )}
             >
                 <div className="p-4 border-b bg-card">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-3">
                         <Link
-                            href="/admin"
-                            className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-ring rounded-sm px-1 py-0.5"
+                            href="/"
+                            className="flex items-center gap-1.5 text-xs font-sans font-bold uppercase tracking-[0.15em] text-muted-foreground hover:text-primary transition-colors"
                         >
-                            <LayoutDashboard className="w-4 h-4 text-primary" aria-hidden="true" /> Panel de Control
+                            <span>Ver Libro Público</span>
+                            <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
                         </Link>
                         <ThemeToggle className="scale-75 origin-right h-8 w-8" />
                     </div>
                     <div className="flex items-center gap-2 px-1">
-                        <Book className="w-5 h-5 text-primary shrink-0" aria-hidden="true" />
-                        <h2 className="font-bold truncate text-sm text-foreground" title={story.title}>{story.title}</h2>
+                        <Book className="w-4 h-4 text-primary shrink-0" aria-hidden="true" />
+                        <h2 className="font-serif font-bold truncate text-sm text-foreground" title={story.title}>
+                            {story.title}
+                        </h2>
                     </div>
                 </div>
 
-                <nav className="flex-1 overflow-y-auto p-4 space-y-6" aria-label="Secciones de la historia">
-                    {/* Story Metadata Link */}
+                <nav className="flex-1 overflow-y-auto p-4 space-y-6" aria-label="Secciones del libro">
                     <div className="space-y-1">
-                        <p className="px-2 text-xs font-bold uppercase tracking-widest text-muted-foreground" id="sidebar-section-general">General</p>
+                        <p className="px-2 text-xs font-bold uppercase tracking-widest text-muted-foreground" id="sidebar-section-general">
+                            Libro
+                        </p>
                         <div role="group" aria-labelledby="sidebar-section-general" className="space-y-1">
                             <Link
                                 href={`/admin/stories/${story.id}`}
                                 className={cn(
-                                    "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
+                                    'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors',
                                     isSettingsActive
-                                        ? "bg-primary text-primary-foreground shadow-sm font-semibold"
-                                        : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                                        ? 'bg-primary text-primary-foreground shadow-sm font-semibold'
+                                        : 'text-foreground hover:bg-accent hover:text-accent-foreground'
                                 )}
                             >
-                                <Settings className="w-4 h-4 shrink-0" aria-hidden="true" /> Configuración
+                                <Settings className="w-4 h-4 shrink-0" aria-hidden="true" /> Tapa y Metadatos
                             </Link>
                             <Link
                                 href={`/admin/stories/${story.id}/map`}
                                 className={cn(
-                                    "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring",
+                                    'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors',
                                     pathname === `/admin/stories/${story.id}/map`
-                                        ? "bg-primary text-primary-foreground shadow-sm font-semibold"
-                                        : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                                        ? 'bg-primary text-primary-foreground shadow-sm font-semibold'
+                                        : 'text-foreground hover:bg-accent hover:text-accent-foreground'
                                 )}
                             >
-                                <Waypoints className="w-4 h-4 shrink-0" aria-hidden="true" /> Mapa de Nodos
+                                <GitFork className="w-4 h-4 shrink-0" aria-hidden="true" /> Árbol de Ramas
                             </Link>
                         </div>
                     </div>
 
-                    {/* Chapters Section */}
                     <div className="space-y-1">
                         <div className="flex items-center justify-between px-2 mb-2">
-                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground" id="sidebar-section-chapters">Capítulos</p>
-                            <Link 
+                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground" id="sidebar-section-chapters">
+                                Capítulos ({chapters.length})
+                            </p>
+                            <Link
                                 href={`/admin/stories/${story.id}/chapters/new`}
                                 aria-label="Crear nuevo capítulo"
-                                className="p-1 rounded hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
+                                className="p-1 rounded hover:bg-accent"
                             >
-                                <Plus className={cn(
-                                    "w-4 h-4 text-foreground hover:text-primary transition-colors",
-                                    isNewChapterActive && "text-primary font-bold"
-                                )} aria-hidden="true" />
+                                <Plus
+                                    className={cn(
+                                        'w-4 h-4 text-foreground hover:text-primary transition-colors',
+                                        isNewChapterActive && 'text-primary font-bold'
+                                    )}
+                                    aria-hidden="true"
+                                />
                             </Link>
                         </div>
 
                         <div role="group" aria-labelledby="sidebar-section-chapters" className="space-y-1">
                             {chapters.length === 0 ? (
-                                <p className="px-3 py-4 text-xs italic text-muted-foreground text-center">No hay capítulos aún</p>
+                                <p className="px-3 py-4 text-xs italic text-muted-foreground text-center">
+                                    No hay capítulos aún
+                                </p>
                             ) : (
                                 chapters.map((chapter) => {
                                     const isActive = pathname === `/admin/stories/${story.id}/chapters/${chapter.id}`
@@ -140,20 +147,23 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
                                             key={chapter.id}
                                             href={`/admin/stories/${story.id}/chapters/${chapter.id}`}
                                             className={cn(
-                                                "group flex items-center justify-between px-3 py-2 rounded-md text-sm transition-all focus:outline-none focus:ring-2 focus:ring-ring",
+                                                'group flex items-center justify-between px-3 py-2 rounded-md text-sm transition-all',
                                                 isActive
-                                                    ? "bg-card border-2 border-primary shadow-sm text-primary font-semibold"
-                                                    : "text-foreground hover:bg-accent hover:text-accent-foreground"
+                                                    ? 'bg-card border border-primary shadow-xs text-primary font-semibold'
+                                                    : 'text-foreground hover:bg-accent hover:text-accent-foreground'
                                             )}
                                         >
                                             <div className="flex items-center gap-2 truncate">
                                                 {chapter.is_starting_chapter ? (
                                                     <Star className="w-3.5 h-3.5 text-yellow-600 dark:text-yellow-400 fill-yellow-500 flex-shrink-0" aria-label="Capítulo inicial" />
                                                 ) : (
-                                                    <ChevronRight className={cn(
-                                                        "w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0",
-                                                        isActive && "opacity-100"
-                                                    )} aria-hidden="true" />
+                                                    <ChevronRight
+                                                        className={cn(
+                                                            'w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0',
+                                                            isActive && 'opacity-100'
+                                                        )}
+                                                        aria-hidden="true"
+                                                    />
                                                 )}
                                                 <span className="truncate">{chapter.title}</span>
                                             </div>
@@ -167,11 +177,11 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
                         </div>
 
                         <Link href={`/admin/stories/${story.id}/chapters/new`} className="block mt-4">
-                            <button 
+                            <button
                                 type="button"
                                 className={cn(
-                                    "w-full flex items-center justify-center gap-2 px-3 py-2 border border-dashed rounded-md text-sm font-medium text-foreground hover:border-primary hover:text-primary hover:bg-card transition-all focus:outline-none focus:ring-2 focus:ring-ring",
-                                    isNewChapterActive && "border-primary text-primary bg-card"
+                                    'w-full flex items-center justify-center gap-2 px-3 py-2 border border-dashed rounded-md text-sm font-medium text-foreground hover:border-primary hover:text-primary hover:bg-card transition-all',
+                                    isNewChapterActive && 'border-primary text-primary bg-card'
                                 )}
                             >
                                 <Plus className="w-4 h-4" aria-hidden="true" /> Nuevo Capítulo
@@ -181,7 +191,9 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
                 </nav>
 
                 <div className="p-4 border-t bg-card">
-                    <p className="text-xs text-center text-muted-foreground font-medium">Árbol de Historias &bull; CMS</p>
+                    <p className="text-xs text-center text-muted-foreground font-medium">
+                        Árbol de Historias &bull; Escritorio
+                    </p>
                 </div>
             </aside>
         </>

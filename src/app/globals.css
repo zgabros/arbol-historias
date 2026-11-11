@@ -161,3 +161,150 @@
     @apply bg-primary/20 text-foreground;
   }
 }
+
+/* ==========================================================================
+   FISICALIDAD DEL PAPEL Y LIBRO (TACTILE BOOK & PAPER SYSTEM)
+   ========================================================================== */
+
+/* Pliego de papel con sombra de hojas apiladas */
+.book-volume {
+  position: relative;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  box-shadow:
+    3px 3px 0 -1px var(--secondary),
+    3px 3px 0 0 var(--border),
+    6px 6px 0 -1px var(--card),
+    6px 6px 0 0 var(--border),
+    10px 14px 28px -6px oklch(0.14 0.01 85 / 0.14);
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dark .book-volume {
+  box-shadow:
+    3px 3px 0 -1px var(--secondary),
+    3px 3px 0 0 var(--border),
+    6px 6px 0 -1px var(--card),
+    6px 6px 0 0 var(--border),
+    12px 16px 34px -6px oklch(0.05 0.01 85 / 0.55);
+}
+
+/* Doble filete editorial interno para tapas y hojas especiales */
+.editorial-frame {
+  border: 1px solid var(--border);
+  outline: 1px solid color-mix(in oklch, var(--border) 65%, transparent);
+  outline-offset: -6px;
+}
+
+/* Botón de decisión y acción con fisicalidad de tira de papel / señalador */
+.paper-choice-btn {
+  position: relative;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  outline: 1px solid color-mix(in oklch, var(--border) 55%, transparent);
+  outline-offset: -4px;
+  box-shadow:
+    2px 2px 0 0 var(--secondary),
+    3px 3px 0 0 var(--border),
+    0 4px 10px -2px oklch(0.14 0.01 85 / 0.07);
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 240ms ease,
+    background-color 240ms ease;
+}
+
+.paper-choice-btn:hover {
+  transform: translate(-2px, -2px);
+  background-color: color-mix(in oklch, var(--accent) 45%, var(--card));
+  border-color: color-mix(in oklch, var(--primary) 55%, var(--border));
+  outline-color: color-mix(in oklch, var(--primary) 30%, transparent);
+  box-shadow:
+    4px 4px 0 0 var(--secondary),
+    5px 5px 0 0 color-mix(in oklch, var(--primary) 45%, var(--border)),
+    0 10px 20px -4px oklch(0.14 0.01 85 / 0.12);
+}
+
+.paper-choice-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow:
+    1px 1px 0 0 var(--border);
+}
+
+/* Botón primario táctil de papel prensado / tinta */
+.paper-action-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: 1px solid var(--primary);
+  outline: 1px solid color-mix(in oklch, var(--primary-foreground) 35%, transparent);
+  outline-offset: -4px;
+  box-shadow:
+    3px 3px 0 0 color-mix(in oklch, var(--primary) 35%, var(--border));
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 220ms ease;
+}
+
+.paper-action-btn:hover {
+  transform: translate(-1.5px, -1.5px);
+  box-shadow:
+    4.5px 4.5px 0 0 color-mix(in oklch, var(--primary) 55%, var(--border));
+}
+
+.paper-action-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow:
+    1px 1px 0 0 color-mix(in oklch, var(--primary) 45%, var(--border));
+}
+
+/* Pestaña / señalador de página */
+.paper-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  background-color: var(--secondary);
+  color: var(--muted-foreground);
+  border: 1px solid var(--border);
+  box-shadow: 1px 2px 0 0 var(--border);
+  transition:
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease;
+}
+
+.paper-tab:hover {
+  transform: translateY(-1.5px);
+  background-color: var(--card);
+  color: var(--foreground);
+  border-color: color-mix(in oklch, var(--primary) 45%, var(--border));
+}
+
+.paper-tab[data-active="true"] {
+  background-color: var(--card);
+  color: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 2px 2px 0 0 color-mix(in oklch, var(--primary) 35%, var(--border));
+}
+
+/* Sello de tinta para objetos del inventario */
+.ink-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  background-color: color-mix(in oklch, var(--accent) 70%, var(--card));
+  color: var(--primary);
+  border: 1px dashed color-mix(in oklch, var(--primary) 55%, var(--border));
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}

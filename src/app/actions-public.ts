@@ -1,7 +1,23 @@
 'use server'
 
-// Actually we need to use the server client to be safe and efficient with Next.js 15
 import { createClient as createServerClient } from '@/lib/supabase/server'
+
+const LEGACY_DEMO_STORY_ID = '9833bfe1-1339-4bda-a03e-fe4b8758913a'
+
+export async function getActivePublicStory() {
+    const supabase = await createServerClient()
+    const { data, error } = await supabase
+        .from('stories')
+        .select('*, chapters(*)')
+        .eq('is_published', true)
+        .neq('id', LEGACY_DEMO_STORY_ID)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+    if (error) throw error
+    return data
+}
 
 export async function getPublicStories() {
     const supabase = await createServerClient()

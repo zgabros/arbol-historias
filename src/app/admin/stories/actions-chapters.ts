@@ -53,7 +53,9 @@ export async function createChapter(storyId: string, title: string) {
         .single()
 
     if (error) throw error
+    revalidatePath('/')
     revalidatePath(`/admin/stories/${storyId}`)
+    revalidatePath(`/admin/stories/${storyId}/map`)
     return data
 }
 
@@ -73,7 +75,9 @@ export async function updateChapter(chapterId: string, updates: { title?: string
         const { error } = await supabase.from('chapters').update(updates).eq('id', chapterId)
         if (error) throw error
 
+        revalidatePath('/')
         revalidatePath(`/admin/stories/${chapter.story_id}`)
+        revalidatePath(`/admin/stories/${chapter.story_id}/map`)
         revalidatePath(`/admin/stories/${chapter.story_id}/chapters/${chapterId}`)
     } catch (error) {
         console.error('Error in updateChapter:', error)
@@ -88,6 +92,7 @@ export async function addOption(chapterId: string, label: string, targetChapterI
 
     if (error) throw error
 
+    revalidatePath(`/admin/stories/${chapter.story_id}/map`)
     revalidatePath(`/admin/stories/${chapter.story_id}/chapters/${chapterId}`)
 }
 
@@ -98,6 +103,7 @@ export async function deleteOption(optionId: string, chapterId: string) {
 
     if (error) throw error
 
+    revalidatePath(`/admin/stories/${chapter.story_id}/map`)
     revalidatePath(`/admin/stories/${chapter.story_id}/chapters/${chapterId}`)
 }
 
@@ -113,6 +119,7 @@ export async function updateOption(optionId: string, updates: {
 
     if (error) throw error
 
+    revalidatePath(`/admin/stories/${chapter.story_id}/map`)
     revalidatePath(`/admin/stories/${chapter.story_id}/chapters/${chapterId}`)
 }
 
@@ -122,7 +129,9 @@ export async function deleteChapter(chapterId: string, storyId: string) {
     const { error } = await supabase.from('chapters').delete().eq('id', chapterId)
 
     if (error) throw error
+    revalidatePath('/')
     revalidatePath(`/admin/stories/${storyId}`)
+    revalidatePath(`/admin/stories/${storyId}/map`)
 }
 
 export async function createChapterAndLink(storyId: string, currentChapterId: string, title: string) {
@@ -149,7 +158,9 @@ export async function createChapterAndLink(storyId: string, currentChapterId: st
 
     if (optionError) throw optionError
 
+    revalidatePath('/')
     revalidatePath(`/admin/stories/${storyId}`)
+    revalidatePath(`/admin/stories/${storyId}/map`)
     revalidatePath(`/admin/stories/${storyId}/chapters/${currentChapterId}`)
     revalidatePath(`/admin/stories/${storyId}/chapters/${newChapter.id}`)
 

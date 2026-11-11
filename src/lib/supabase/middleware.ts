@@ -60,8 +60,13 @@ export async function updateSession(request: NextRequest) {
 
     // Protected routes logic
     if (request.nextUrl.pathname.startsWith('/admin')) {
-        if (!user) {
+        if (!user || !user.email) {
             return NextResponse.redirect(new URL('/login', request.url))
+        }
+
+        // Restricción estricta al único autor/editor del proyecto
+        if (user.email.toLowerCase() !== 'zgabros@gmail.com') {
+            return NextResponse.redirect(new URL('/', request.url))
         }
 
         // Admin email restriction - Check database

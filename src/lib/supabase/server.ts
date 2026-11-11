@@ -35,6 +35,8 @@ export async function createClient() {
     )
 }
 
+export const SOLE_EDITOR_EMAIL = 'zgabros@gmail.com'
+
 export async function getSessionUser() {
     const supabase = await createClient()
     const {
@@ -42,7 +44,10 @@ export async function getSessionUser() {
         error: userError,
     } = await supabase.auth.getUser()
 
-    if (userError || !user) return null
+    if (userError || !user || !user.email) return null
+
+    // Único editor autorizado del proyecto
+    if (user.email.toLowerCase() !== SOLE_EDITOR_EMAIL) return null
 
     const { data: adminUser, error: adminError } = await supabase
         .from('admin_users')
@@ -55,6 +60,6 @@ export async function getSessionUser() {
     return {
         id: user.id,
         email: user.email,
-        role: adminUser.role as 'admin' | 'editor',
+        role: 'admin' as const,
     }
 }

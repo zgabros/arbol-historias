@@ -5,15 +5,7 @@ import { usePathname } from 'next/navigation'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 export function BookNavigation() {
-    return (
-        <header className="w-full max-w-4xl mx-auto pt-3 sm:pt-4 px-4 sm:px-8">
-            <div className="flex flex-wrap items-center justify-end gap-3 pb-2 border-b border-border/40">
-                <div className="flex items-center gap-2">
-                    <ThemeToggle className="scale-90 origin-right" />
-                </div>
-            </div>
-        </header>
-    )
+    return null
 }
 
 export function BookFooter() {
@@ -35,6 +27,8 @@ export function BookFooter() {
                     <Link href="/admin" className="hover:text-primary transition-colors opacity-75 hover:opacity-100">
                         Escritorio del Autor
                     </Link>
+                    <span aria-hidden="true">&bull;</span>
+                    <ThemeToggle />
                 </div>
             </div>
         </footer>

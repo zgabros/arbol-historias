@@ -125,7 +125,7 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
     if (!chapter) return <div className="p-8 text-foreground font-medium">Capítulo no encontrado</div>
 
     return (
-        <div className="p-4 sm:p-8 max-w-5xl mx-auto space-y-6 animate-in fade-in duration-500">
+        <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-5 animate-in fade-in duration-500">
             {/* Barra superior del editor de capítulo con accesibilidad optimizada */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-4 rounded-lg border shadow-sm sticky top-12 sm:top-0 z-30">
                 <div className="flex items-center gap-2">
@@ -139,7 +139,7 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                         {saving ? <Loader2 className="mr-1 h-3 w-3 animate-spin" aria-hidden="true" /> : <Save className="mr-1 h-3 w-3" aria-hidden="true" />}
                         Guardar Cambios
                     </Button>
-                    <Button size="sm" className="text-xs font-semibold" onClick={async () => {
+                    <Button size="sm" className="text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90" onClick={async () => {
                         setChapter({ ...chapter, status: 'published' })
                         await updateChapter(chapter.id, { status: 'published' })
                         toast.success('¡Publicado!')
@@ -159,10 +159,10 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                <div className="lg:col-span-2 space-y-5">
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-4">
+                        <CardHeader className="flex flex-row items-center justify-between pb-3">
                             <CardTitle className="text-base sm:text-lg">Contenido del Capítulo</CardTitle>
                             <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-md border">
                                 <Label htmlFor="start" className="text-xs font-bold cursor-pointer text-foreground">Capítulo Inicial</Label>
@@ -188,7 +188,7 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                                 <Label htmlFor="story-content">Texto de la Historia</Label>
                                 <Textarea
                                     id="story-content"
-                                    className="min-h-[300px] sm:min-h-[400px] leading-relaxed text-sm sm:text-base font-serif"
+                                    className="min-h-[280px] sm:min-h-[360px] leading-relaxed text-sm sm:text-base font-serif"
                                     value={chapter.content || ''}
                                     onChange={e => setChapter({ ...chapter, content: e.target.value })}
                                     placeholder="Escribe o pega aquí el contenido del capítulo..."
@@ -198,7 +198,7 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                     </Card>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-5">
                     <Card>
                         <CardHeader className="pb-3">
                             <div className="flex items-center justify-between">
@@ -207,7 +207,7 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                                     <Plus className="w-4 h-4" aria-hidden="true" />
                                 </Button>
                             </div>
-                            <div className="mt-4 flex flex-col sm:flex-row gap-2">
+                            <div className="mt-3 flex flex-col sm:flex-row gap-2">
                                 <Input
                                     placeholder="Nombre del siguiente capítulo..."
                                     value={newChapterTitle}
@@ -216,13 +216,13 @@ export default function ChapterEditorPage({ params }: { params: Promise<{ id: st
                                     onKeyDown={e => e.key === 'Enter' && handleQuickCreate()}
                                     aria-label="Título del siguiente capítulo a crear de forma rápida"
                                 />
-                                <Button size="sm" variant="secondary" className="h-9 text-xs font-semibold whitespace-nowrap" onClick={handleQuickCreate} disabled={creatingNext}>
+                                <Button size="sm" variant="secondary" className="h-9 text-xs font-semibold whitespace-nowrap bg-primary text-primary-foreground hover:bg-primary/90" onClick={handleQuickCreate} disabled={creatingNext}>
                                     {creatingNext ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" aria-hidden="true" /> : <Plus className="w-3.5 h-3.5 mr-1" aria-hidden="true" />}
                                     Crear Siguiente
                                 </Button>
                             </div>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-3">
                             {chapter.options?.length === 0 && <p className="text-sm text-muted-foreground italic py-2">No hay opciones configuradas. Este podría ser un final de la historia.</p>}
                             {chapter.options?.map((option: any, idx: number) => (
                                 <fieldset key={option.id} className="p-3 border rounded-lg space-y-3 bg-muted/30">

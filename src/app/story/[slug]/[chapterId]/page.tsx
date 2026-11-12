@@ -17,10 +17,10 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
         <div className="min-h-screen bg-background text-foreground transition-colors duration-500 selection:bg-primary/20 flex flex-col justify-between">
             <BookNavigation />
 
-            <main className="max-w-4xl mx-auto px-4 sm:px-8 my-8 sm:my-14 animate-in fade-in duration-700 flex-1 w-full">
-                <div className="book-volume editorial-frame px-6 py-10 sm:px-14 sm:py-16">
+            <main className="max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-10 animate-in fade-in duration-700 flex-1 w-full">
+                <div className="book-volume editorial-frame px-6 py-8 sm:px-12 sm:py-12">
                     {/* Cabecera de pliego (Running head de libro físico) */}
-                    <div className="flex items-center justify-between text-xs font-sans uppercase tracking-[0.2em] text-muted-foreground border-b border-border/60 pb-4 mb-10 sm:mb-14">
+                    <div className="flex items-center justify-between text-xs font-sans uppercase tracking-[0.2em] text-muted-foreground border-b border-border/60 pb-3 mb-8 sm:mb-10">
                         <span className="truncate max-w-[60%]">{story.title}</span>
                         <span className="font-serif italic normal-case tracking-normal text-sm text-primary truncate max-w-[38%]">
                             {chapter.title}

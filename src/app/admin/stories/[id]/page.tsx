@@ -19,8 +19,8 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
     const startingChapter = chapters.find((c: any) => c.is_starting_chapter) || chapters[0]
 
     return (
-        <div className="p-4 sm:p-8 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
+        <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-6 animate-in fade-in duration-500">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
                 <div>
                     <p className="text-xs font-sans font-bold uppercase tracking-[0.2em] text-primary mb-1">
                         Libro Activo
@@ -58,8 +58,8 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="md:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2 space-y-5">
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-lg font-serif">Tapa y Metadatos del Libro</CardTitle>
@@ -90,18 +90,18 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
                                 title="¿Reiniciar libro desde cero?"
                                 description={`Se eliminará "${story.title}" junto con todos sus capítulos y ramificaciones para dejar el proyecto limpio.`}
                                 label="Descartar Historia y Empezar de Cero"
-                                className="w-full justify-center py-5 border-red-200 text-xs font-semibold"
+                                className="w-full justify-center py-4 border-red-200 text-xs font-semibold"
                             />
                         </CardContent>
                     </Card>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-5">
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-lg font-serif">Estado en Portada</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-6">
+                        <CardContent className="space-y-5">
                             <div className="flex flex-col gap-3">
                                 <StoryStatusToggle storyId={story.id} initialStatus={story.is_published} />
                                 <p className="text-xs text-muted-foreground">
@@ -111,7 +111,7 @@ export default async function StoryDetailsPage({ params }: { params: Promise<{ i
                                 </p>
                             </div>
 
-                            <div className="pt-4 border-t space-y-2 text-sm">
+                            <div className="pt-3 border-t space-y-2 text-sm">
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Total de capítulos:</span>
                                     <span className="font-bold text-foreground">{chapters.length}</span>

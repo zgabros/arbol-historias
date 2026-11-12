@@ -73,7 +73,6 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
                             <span>Ver Libro Público</span>
                             <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
                         </Link>
-                        <ThemeToggle className="scale-75 origin-right h-8 w-8" />
                     </div>
                     <div className="flex items-center gap-2 px-1">
                         <Book className="w-4 h-4 text-primary shrink-0" aria-hidden="true" />
@@ -190,10 +189,11 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
                     </div>
                 </nav>
 
-                <div className="p-4 border-t bg-card">
+                <div className="p-4 border-t bg-card flex items-center justify-between">
                     <p className="text-xs text-center text-muted-foreground font-medium">
-                        Árbol de Historias &bull; Escritorio
+                        Árbol de Historias
                     </p>
+                    <ThemeToggle className="scale-75 origin-right h-8 w-8" />
                 </div>
             </aside>
         </>

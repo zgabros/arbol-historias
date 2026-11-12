@@ -193,7 +193,7 @@ export default function StorySidebar({ story, chapters }: StorySidebarProps) {
                     <p className="text-xs text-center text-muted-foreground font-medium">
                         Árbol de Historias
                     </p>
-                    <ThemeToggle className="scale-75 origin-right h-8 w-8" />
+                    <ThemeToggle />
                 </div>
             </aside>
         </>
